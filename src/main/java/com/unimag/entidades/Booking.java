@@ -24,8 +24,8 @@ public class Booking {
     @Column(nullable = false)
     private OffsetDateTime createdAt;
 
-
-    @ManyToOne(targetEntity = Passenger.class)
+    //clase madre
+    @ManyToOne
     @JoinColumn(name = "passenger_id")
     private Passenger passenger;
 
