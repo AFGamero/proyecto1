@@ -6,4 +6,5 @@ public interface    PassengerProfile extends JpaRepository<PassengerRepository, 
 
     //este no es necesario
     //estea es la nueva actualisacion de la rama main
+    //nuevo cambio 2
 }
