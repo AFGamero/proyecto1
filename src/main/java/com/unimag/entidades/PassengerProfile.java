@@ -1,19 +1,16 @@
 package com.unimag.entidades;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
 
 
 @Setter
 @Getter
+@Table(name = "passanger_profiles")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Builder
 public class PassengerProfile {
 
     @Id
@@ -28,7 +25,8 @@ public class PassengerProfile {
 
     //clase hija de Passenger
     //relacion uno a uno con Passenger
-    @OneToOne(mappedBy = "passenger_id")
+    @OneToOne
+    @JoinColumn(name = "passenger_id", unique = true)
     private Passenger passenger;
 
 

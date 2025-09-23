@@ -1,19 +1,17 @@
 package com.unimag.entidades;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Setter
 @Getter
+@Table(name = "booking_items")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Builder
 public class BookingItem {
 
     @Id
@@ -35,8 +33,6 @@ public class BookingItem {
     @ManyToOne
     @JoinColumn(name = "flight_id")
     private Flight flight;
-
-
 
 
 

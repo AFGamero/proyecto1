@@ -1,19 +1,17 @@
 package com.unimag.entidades;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Setter
 @Getter
+@Table(name = "passangers")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Builder
 public class Passenger {
 
     @Id
@@ -29,11 +27,12 @@ public class Passenger {
 
     //clase madre de PassengerProfile
     //relacion uno a uno con PassengerProfile
-    @OneToOne(optional  = false)
-    @JoinColumn(name = "passengerProfile_id")
+    @OneToOne(mappedBy = "passenger")
     private PassengerProfile passengerProfile;
 
-    @OneToMany(mappedBy = "passenger",targetEntity = Booking.class)
+
+    //hija
+    @OneToMany(mappedBy = "passenger")
     private List<Booking> bookings;
 
 

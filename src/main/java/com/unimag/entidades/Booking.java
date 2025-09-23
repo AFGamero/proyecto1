@@ -1,16 +1,17 @@
 package com.unimag.entidades;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+
+@Builder
 @Setter
 @Getter
+@Table(name = "bookings")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,14 +30,9 @@ public class Booking {
     @JoinColumn(name = "passenger_id")
     private Passenger passenger;
 
-    @OneToMany(mappedBy = "booking",targetEntity = BookingItem.class)
-    private List<BookingItem> bookingsItems;
-
-    public void addBookingItem(BookingItem bookingItem) {
-        bookingsItems.add(bookingItem);
-            bookingItem.setBooking(this);
-    }
-
+    @OneToMany(mappedBy = "booking")
+    @Builder.Default
+    private List<BookingItem> bookingsItems = new ArrayList<>();
 
 
 }

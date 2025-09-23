@@ -1,17 +1,15 @@
 package com.unimag.entidades;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 @Setter
 @Getter
+@Table(name = "airlines")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,13 +27,8 @@ public class Airline {
     private String name;
 
     @OneToMany(mappedBy = "airline", targetEntity = Flight.class)
+    @Builder.Default
     private List<Flight> flights = new ArrayList<>();
-
-
-    public void addFlight(Flight flight) {
-        flights.add(flight);
-            flight.setAirline(this);
-    }
 
 
 

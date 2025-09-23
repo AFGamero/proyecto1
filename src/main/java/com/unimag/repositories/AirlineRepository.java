@@ -11,5 +11,6 @@ public interface AirlineRepository extends JpaRepository<Airline, Long> {
 
 
 
-    Optional<Airline> findByCode(String code);
+    Optional<Airline> findByCode(String code);// IATA code (ej. "AV")
+
 }

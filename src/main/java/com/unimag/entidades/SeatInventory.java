@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
+@Table(name = "seat_invetories")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,7 +24,10 @@ public class SeatInventory {
     private Integer totalSeats;
     private Integer availableSeats;
 
-    @ManyToOne(targetEntity = Flight.class)
+    @ManyToOne
     @JoinColumn(name = "flight_id")
     private Flight flight;
+
+    @Column(nullable = false)
+    private Cabin cabin;
 }

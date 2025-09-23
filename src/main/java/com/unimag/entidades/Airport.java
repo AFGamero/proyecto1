@@ -1,13 +1,15 @@
 package com.unimag.entidades;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Builder
 @Setter
 @Getter
+@Table(name = "airports")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,12 +29,12 @@ public class Airport {
     private String city;
 
 
-    @ManyToOne
-    @JoinColumn(name = "origin_airport_id")
-    private Airport originAirport;
+    @OneToMany(mappedBy = "origin")
+    @Builder.Default
+    private List<Flight> originFlights = new ArrayList<>() ;
 
-    @ManyToOne
-    @JoinColumn(name = "destination_airport_id")
-    private Airport destinationAirport;
+    @OneToMany(mappedBy = "destination")
+    @Builder.Default
+    private List<Flight> destinationFlights = new ArrayList<>() ;
 
 }
