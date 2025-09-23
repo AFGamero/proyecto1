@@ -10,6 +10,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
+@Table(name = "passanger_profiles")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,7 +29,8 @@ public class PassengerProfile {
 
     //clase hija de Passenger
     //relacion uno a uno con Passenger
-    @OneToOne(mappedBy = "passenger_id")
+    @OneToOne
+    @JoinColumn(name = "passenger_id", unique = true)
     private Passenger passenger;
 
 

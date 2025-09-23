@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 
 @Setter
 @Getter
+@Table(name = "booking_items")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,8 +36,6 @@ public class BookingItem {
     @ManyToOne
     @JoinColumn(name = "flight_id")
     private Flight flight;
-
-
 
 
 
