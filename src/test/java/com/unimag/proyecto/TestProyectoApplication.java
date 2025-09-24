@@ -1,5 +1,6 @@
 package com.unimag.proyecto;
 
+import com.unimag.ProyectoApplication;
 import org.springframework.boot.SpringApplication;
 
 public class TestProyectoApplication {
