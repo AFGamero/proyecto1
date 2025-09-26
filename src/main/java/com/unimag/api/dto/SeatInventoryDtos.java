@@ -1,6 +1,10 @@
 package com.unimag.api.dto;
 
+import com.unimag.dominio.entidades.Cabin;
+
 import java.io.Serializable;
+import java.time.OffsetDateTime;
+import java.util.Set;
 
 public record SeatInventoryDtos() {
 
@@ -23,5 +27,18 @@ public record SeatInventoryDtos() {
             Integer totalSeats,
             Integer availableSeats
     )implements Serializable {}
+
+
+    public record FlightDtos(
+            Long id,
+            String number,
+            OffsetDateTime departureTime,
+            OffsetDateTime arrivalTime,
+            AirlineDtos airlineDtos,
+            AirportDtos origin,
+            AirportDtos destination,
+            Set<Tag> tags
+    )implements Serializable {}
+
 
 }

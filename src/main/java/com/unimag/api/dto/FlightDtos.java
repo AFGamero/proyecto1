@@ -26,5 +26,29 @@ public record FlightDtos() {
             Set<SeatInventoryDtos.SeatInventoryRequest> seatInventorysList
     ) implements Serializable {}
 
+    public record FlightUpdateRequest(
+            String number,
+            OffsetDateTime departureTime,
+            OffsetDateTime arrivalTime,
+            AirlineDtos airlineDtos ,
+            AirportDtos origin,
+            AirportDtos destination
+    ) implements Serializable {}
+
+    public record AirlineDtos(
+            Long id,
+            String name,
+            String code
+    ) implements Serializable {}
+
+    public record AirportDtos(
+            Long id,
+            String code,
+            String name,
+            String city
+    ) implements Serializable {}
+
+
+
 
 }
