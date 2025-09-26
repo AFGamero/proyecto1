@@ -15,6 +15,7 @@ public record AirlineDtos() {
             String code,
             List<FlightDtos.FligtCreateRequest> flights
     )implements Serializable {}
+
     public record AirlineResponse(
             Long id,
             String name,

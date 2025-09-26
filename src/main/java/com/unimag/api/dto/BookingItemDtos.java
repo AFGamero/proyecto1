@@ -23,5 +23,14 @@ public record BookingItemDtos() {
             BookingDtos bookingResponseDto
     ) {
     }
+    public record BookingItemUpdateRequestDto(
+            Cabin cabin,
+            BigDecimal price,
+            Integer segmentOrder,
+            BookingDtos bookingDtos
+
+    ) {
+    }
+
 
 }

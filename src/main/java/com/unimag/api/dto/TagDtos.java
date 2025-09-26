@@ -1,12 +1,9 @@
 package com.unimag.api.dto;
 
-import com.unimag.dominio.entidades.Cabin;
-import com.unimag.dominio.entidades.Flight;
-
 import java.io.Serializable;
 import java.util.Set;
 
-public record Tag() {
+public record TagDtos() {
     public record TagRequest(
           String name,
           Set<FlightDtos.FlightCreateResponse> flights
@@ -18,7 +15,11 @@ public record Tag() {
           Set<FlightDtos.FlightCreateResponse> flights
     ) implements Serializable {}
 
-
+    public record TagResponseDto(
+            Long id,
+            String name,
+            Set<FlightDtos> flights
+    )implements Serializable{}
 
 
 }

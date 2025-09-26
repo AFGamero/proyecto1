@@ -1,7 +1,5 @@
 package com.unimag.api.dto;
 
-import com.unimag.dominio.entidades.Cabin;
-
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.Set;
@@ -37,8 +35,9 @@ public record SeatInventoryDtos() {
             AirlineDtos airlineDtos,
             AirportDtos origin,
             AirportDtos destination,
-            Set<Tag> tags
+            Set<TagDtos> tags
     )implements Serializable {}
+
 
 
 }
