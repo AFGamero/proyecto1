@@ -7,7 +7,7 @@ import java.util.List;
 
 @Setter
 @Getter
-@Table(name = "passangers")
+@Table(name = "passengers")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor

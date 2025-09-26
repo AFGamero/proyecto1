@@ -32,7 +32,7 @@ public class Flight {
     @Column(nullable = false)
     private OffsetDateTime arrivalTime;
 
-    @OneToMany(mappedBy = "bookingItem")
+    @OneToMany(mappedBy = "flight")
     @Builder.Default
     private List<BookingItem> bookingItems = new ArrayList<>();
 
@@ -50,7 +50,7 @@ public class Flight {
 
     @OneToMany(mappedBy = "flight")
     @Builder.Default
-    private List<SeatInventory> seatlnventorysList = new ArrayList<>();
+    private List<SeatInventory> seatInventorysList = new ArrayList<>();
 
     @ManyToMany
 
