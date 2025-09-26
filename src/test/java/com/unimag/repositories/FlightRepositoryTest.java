@@ -1,8 +1,9 @@
 package com.unimag.repositories;
 
-import com.unimag.entidades.Airline;
-import com.unimag.entidades.Airport;
-import com.unimag.entidades.Flight;
+import com.unimag.dominio.entidades.Airline;
+import com.unimag.dominio.entidades.Airport;
+import com.unimag.dominio.entidades.Flight;
+import com.unimag.dominio.repositories.FlightRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

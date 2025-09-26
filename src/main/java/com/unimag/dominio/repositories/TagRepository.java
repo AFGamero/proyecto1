@@ -1,6 +1,6 @@
-package com.unimag.repositories;
+package com.unimag.dominio.repositories;
 
-import com.unimag.entidades.Tag;
+import com.unimag.dominio.entidades.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

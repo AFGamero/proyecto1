@@ -1,6 +1,8 @@
 package com.unimag.repositories;
 
-import com.unimag.entidades.*;
+import com.unimag.dominio.entidades.Booking;
+import com.unimag.dominio.entidades.Passenger;
+import com.unimag.dominio.repositories.BookingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

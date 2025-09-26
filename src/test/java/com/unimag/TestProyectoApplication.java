@@ -1,4 +1,4 @@
-package com.unimag.proyecto;
+package com.unimag;
 
 import org.springframework.boot.SpringApplication;
 

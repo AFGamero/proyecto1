@@ -1,6 +1,6 @@
-package com.unimag.repositories;
+package com.unimag.dominio.repositories;
 
-import com.unimag.entidades.Passenger;
+import com.unimag.dominio.entidades.Passenger;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

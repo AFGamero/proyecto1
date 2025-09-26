@@ -1,4 +1,4 @@
-package com.unimag.proyecto;
+package com.unimag;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

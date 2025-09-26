@@ -1,4 +1,4 @@
-package com.unimag.entidades;
+package com.unimag.dominio.entidades;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,11 +9,12 @@ import java.util.List;
 @Builder
 @Setter
 @Getter
-@Table(name = "airports")
+@Table(name = "airlines")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Airport {
+
+public class Airline {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,16 +26,10 @@ public class Airport {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String city;
-
-
-    @OneToMany(mappedBy = "origin")
+    @OneToMany(mappedBy = "airline", targetEntity = Flight.class)
     @Builder.Default
-    private List<Flight> originFlights = new ArrayList<>() ;
+    private List<Flight> flights = new ArrayList<>();
 
-    @OneToMany(mappedBy = "destination")
-    @Builder.Default
-    private List<Flight> destinationFlights = new ArrayList<>() ;
+
 
 }

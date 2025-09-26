@@ -1,4 +1,4 @@
-package com.unimag.entidades;
+package com.unimag.dominio.entidades;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

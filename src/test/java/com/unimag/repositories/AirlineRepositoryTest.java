@@ -1,11 +1,10 @@
 package com.unimag.repositories;
 
-import com.unimag.entidades.Airline;
-import org.junit.jupiter.api.BeforeEach;
+import com.unimag.dominio.entidades.Airline;
+import com.unimag.dominio.repositories.AirlineRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 
 import java.util.Optional;
 

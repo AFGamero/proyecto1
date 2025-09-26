@@ -1,4 +1,4 @@
-package com.unimag.proyecto;
+package com.unimag;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,6 +1,7 @@
 package com.unimag.repositories;
 
-import com.unimag.entidades.Tag;
+import com.unimag.dominio.entidades.Tag;
+import com.unimag.dominio.repositories.TagRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

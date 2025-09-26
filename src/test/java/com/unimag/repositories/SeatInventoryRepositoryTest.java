@@ -1,8 +1,10 @@
 package com.unimag.repositories;
 
-import com.unimag.entidades.Cabin;
-import com.unimag.entidades.Flight;
-import com.unimag.entidades.SeatInventory;
+import com.unimag.dominio.entidades.Cabin;
+import com.unimag.dominio.entidades.Flight;
+import com.unimag.dominio.entidades.SeatInventory;
+import com.unimag.dominio.repositories.FlightRepository;
+import com.unimag.dominio.repositories.SeatInventoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
