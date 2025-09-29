@@ -7,7 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Data
 @Builder
 @Setter
 @Getter
@@ -18,21 +18,23 @@ import java.util.List;
 
 public class Booking {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "booking_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "created_at")
     private OffsetDateTime createdAt;
 
-    //clase madre
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "passenger_id")
     private Passenger passenger;
 
-    @OneToMany(mappedBy = "booking")
-    @Builder.Default
-    private List<BookingItem> bookingsItems = new ArrayList<>();
+    @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
+    private List<BookingItem> items;
 
+    public void addItem(BookingItem bookingItem) {
+        items.add(bookingItem);
+        bookingItem.setBooking(this);
+    }
 
 }

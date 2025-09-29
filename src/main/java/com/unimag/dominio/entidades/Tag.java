@@ -6,6 +6,7 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@Data
 @Builder
 @Setter
 @Getter
@@ -16,15 +17,14 @@ import java.util.Set;
 
 public class Tag {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "tag_id")
     private Long id;
 
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "tags")
-    //private Flight flights;
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     @Builder.Default
     private Set<Flight> flights = new HashSet<>();
 

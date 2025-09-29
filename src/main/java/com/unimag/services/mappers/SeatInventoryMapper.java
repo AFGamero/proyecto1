@@ -1,26 +1,26 @@
 package com.unimag.services.mappers;
 
 import com.unimag.api.dto.SeatInventoryDtos;
+import com.unimag.dominio.entidades.Cabin;
 import com.unimag.dominio.entidades.Flight;
 import com.unimag.dominio.entidades.SeatInventory;
 
 public class SeatInventoryMapper {
-    public static SeatInventory ToEntity(SeatInventoryDtos.SeatInventoryRequest request ) {
-        return SeatInventory.builder().Cabin(request.cabin()).availableSeats(request.availableSeats())
-                .totalSeats(request.availableSeats())
-                .flight(Flight.builder().id(request.flightId()).build()).build();
+    public static SeatInventory toEntity(SeatInventoryDtos.SeatInventoryCreateRequest request) {
+        return SeatInventory.builder().cabin(Cabin.valueOf(request.cabin())).availableSeats(request.availableSeats())
+                .totalSeats(request.availableSeats()).build();
     }
-    public static SeatInventoryDtos.SeatInventoryResponse ToResponse(SeatInventory seatInventory) {
+
+    public static SeatInventoryDtos.SeatInventoryResponse toResponse(SeatInventory seatInventory) {
         return new SeatInventoryDtos.SeatInventoryResponse(
-                seatInventory.getId(), seatInventory.getCabin(),
-                seatInventory.getTotalSeats(), seatInventory.getAvailableSeats(),
-                seatInventory.getFlight() == null ? seatInventory.getFlight().getId() : null
+                seatInventory.getId(), seatInventory.getCabin().name(),
+                seatInventory.getTotalSeats(), seatInventory.getAvailableSeats(), seatInventory.getFlight().getId()
         );
     }
 
-    public static void path(SeatInventory entity, SeatInventoryDtos.SeatInventoryUpdateRequest update) {
-        if (update.cabin() != null) entity.setCabin(update.cabin());
+    public static void patch(SeatInventory entity, SeatInventoryDtos.SeatInventoryUpdateRequest update) {
+        if (update.cabin() != null) entity.setCabin(Cabin.valueOf(update.cabin()));
+        if (update.totalSeats() != null) entity.setTotalSeats(update.totalSeats());
         if (update.availableSeats() != null) entity.setAvailableSeats(update.availableSeats());
-        if (update.flightId() != 0) entity.setFlight(Flight.builder().id(update.flightId()).build());
     }
 }

@@ -3,24 +3,30 @@ package com.unimag.services.mappers;
 import com.unimag.api.dto.AirportDtos;
 import com.unimag.dominio.entidades.Airport;
 
-import java.util.stream.Collectors;
+public class AirportMapper {
+    public static Airport toEntity(AirportDtos.AirportCreateRequest request) {
+        return Airport.builder()
+                .code(request.code())
+                .name(request.name())
+                .city(request.city())
+                .build();
+    }
 
-    public class AirportMapper {
-        public static Airport ToEntity(AirportDtos.AirportCreateRequest request ) {
-            return  Airport.builder().code(request.code()).name(request.name()).build();
-        }
-        public static  AirportDtos.AirportResponse ToResponse(Airport airport ) {
-            return new AirportDtos.AirportResponse(airport.getId(), airport.getCode(),
-                    airport.getName(), airport.getCity(),
-                    airport.getOriginFlights() == null ? null :
-                            airport.getOriginFlights().stream().map(FlightMapper::ToResponse).collect(Collectors.toSet()),
-                    airport.getDestinationFlights() == null ? null:
-                            airport.getDestinationFlights().stream().map(FlightMapper::ToResponse).collect(Collectors.toSet()));
+    public static Airport toResponse(Airport airport) {
+        return Airport.builder()
+                .id(airport.getId())
+                .code(airport.getCode())
+                .name(airport.getName())
+                .city(airport.getCity())
+                .build();
+    }
 
-        }
-        public static void path(Airport entity, AirportDtos.AirportUpdateRequest request ) {
-            if (request.code() != null) entity.setCode(request.code());
-            if (request.name() != null) entity.setName(request.name());
+    public static void path(Airport entity, String code, String name, String city, String country) {
+        if (code != null) entity.setCode(code);
+        if (name != null) entity.setName(name);
+        if (city != null) entity.setCity(city);
+    }
 
-        }
+
+
 }

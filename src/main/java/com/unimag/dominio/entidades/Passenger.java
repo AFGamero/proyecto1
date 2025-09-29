@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.List;
 
+@Data
 @Setter
 @Getter
 @Table(name = "passengers")
@@ -13,27 +14,18 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class Passenger {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "passenger_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "full_name")
     private String fullName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
-
-    //clase madre de PassengerProfile
-    //relacion uno a uno con PassengerProfile
-    @OneToOne(mappedBy = "passenger")
-    private PassengerProfile passengerProfile;
-
-
-    //hija
-    @OneToMany(mappedBy = "passenger")
-    private List<Booking> bookings;
+    @OneToOne @JoinColumn(name = "passenger_profile_id", unique = true)
+    private PassengerProfile profile;
 
 
 }

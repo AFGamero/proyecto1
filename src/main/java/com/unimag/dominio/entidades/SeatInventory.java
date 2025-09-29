@@ -1,33 +1,33 @@
 package com.unimag.dominio.entidades;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@Data
 @Setter
 @Getter
 @Table(name = "seat_inventories")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Builder
 public class SeatInventory {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "seat_inventory_id")
     private Long id;
 
-    //private Cabin cabin;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Cabin cabin;
 
+    @Column(nullable = false, name = "total_seats")
     private Integer totalSeats;
+
+    @Column(nullable = false, name = "available_seats")
     private Integer availableSeats;
 
-    @ManyToOne
-    @JoinColumn(name = "flight_id")
+    @ManyToOne @JoinColumn(name = "flight_id", nullable = false)
     private Flight flight;
 
-    @Column(nullable = false)
-    private Cabin cabin;
 }

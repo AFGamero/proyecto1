@@ -6,6 +6,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Builder
 @Setter
 @Getter
@@ -14,12 +15,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Airport {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "airport_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 3)
     private String code;
 
     @Column(nullable = false)
@@ -27,14 +27,5 @@ public class Airport {
 
     @Column(nullable = false)
     private String city;
-
-
-    @OneToMany(mappedBy = "origin")
-    @Builder.Default
-    private List<Flight> originFlights = new ArrayList<>() ;
-
-    @OneToMany(mappedBy = "destination")
-    @Builder.Default
-    private List<Flight> destinationFlights = new ArrayList<>() ;
 
 }

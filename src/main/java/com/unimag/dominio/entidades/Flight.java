@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Data
 @Builder
 @Setter
 @Getter
@@ -19,52 +20,40 @@ import java.util.Set;
 
 public class Flight {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "flight_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String number;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "departure_time")
     private OffsetDateTime departureTime;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "arrival_time")
     private OffsetDateTime arrivalTime;
 
-    @OneToMany(mappedBy = "flight")
-    @Builder.Default
-    private List<BookingItem> bookingItems = new ArrayList<>();
-
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "airline_id")
     private Airline airline;
 
-    @ManyToOne
-    @JoinColumn(name = "origin_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "origin_airport_id", nullable = false)
     private Airport origin;
 
-    @ManyToOne
-    @JoinColumn(name = "destination_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "destination_airport_id", nullable = false)
     private Airport destination;
 
-    @OneToMany(mappedBy = "flight")
-    @Builder.Default
-    private List<SeatInventory> seatInventorysList = new ArrayList<>();
-
-    @ManyToMany
-
-    @JoinTable(
-            name = "flight_tags",                                // tabla intermedia
-            joinColumns = @JoinColumn(name = "flight_id"),       // FK hacia Flight
-            inverseJoinColumns = @JoinColumn(name = "tag_id")    // FK hacia Tag
-    )
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    @JoinTable(name = "tags_flights",
+            joinColumns = @JoinColumn(name = "flight_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @Builder.Default
     private Set<Tag> tags = new HashSet<>();
 
     public void addTag(Tag tag) {
-        tags.add(tag);
+        this.tags.add(tag);
         tag.getFlights().add(this);
     }
-
 }

@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
+@Data
 @Setter
 @Getter
 @Table(name = "booking_items")
@@ -14,27 +15,27 @@ import java.math.BigDecimal;
 @Builder
 public class BookingItem {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "booking_item_id")
     private Long id;
 
-    //private Cabin cabin;
-
-    private BigDecimal price;
-    private Integer segmentOrder;
-
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Cabin cabin;
 
-    @ManyToOne
+    @Column(nullable = false)
+    private BigDecimal price;
+
+    @Column(nullable = false, name = "segment_order")
+    private Integer segmentOrder;
+
+    @ManyToOne(optional = false)
     @JoinColumn(name = "booking_id")
     private Booking booking;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "flight_id")
     private Flight flight;
-
-
 
 
 

@@ -1,8 +1,10 @@
 package com.unimag.api.dto;
 
+import com.unimag.dominio.entidades.Passenger;
+
 import java.io.Serializable;
 
-public record PassengerDtos() {
+public record PassengerDtos extends Passenger {
     public record PassengerCreateRequest(
             String fullName,
             String email,

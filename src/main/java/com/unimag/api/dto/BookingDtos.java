@@ -1,31 +1,24 @@
     package com.unimag.api.dto;
 
     import com.unimag.dominio.entidades.BookingItem;
+    import jakarta.annotation.Nonnull;
 
     import java.io.Serializable;
+    import java.math.BigDecimal;
     import java.time.OffsetDateTime;
     import java.util.List;
 
     public record BookingDtos() {
-        public record BookingCreateRequest(
-                OffsetDateTime createdAt,
-                PassengerDtos passengerDtos,
-                List<BookingItemDtos.BookingItemRequestDto> items
-        )implements Serializable {}
+        public record BookingCreateRequest(@Nonnull Long passenger_id) implements Serializable {}
+
+        public record BookingResponse(Long id, OffsetDateTime createdAt, String passenger_name, String passenger_email,
+                                      List<BookingItemResponse> items) implements Serializable{}
 
 
-    public record BookingCreateResponse(
-            Long id,
-            OffsetDateTime createdAt,
-            PassengerDtos passenger,
-            List<BookingItemDtos.BookingItemResponseDto> items
-    )implements Serializable {}
+        public record BookingItemCreateRequest(@Nonnull String cabin, @Nonnull BigDecimal price, @Nonnull Integer segmentOrder) implements Serializable {}
 
-    public record BookingUpdateRequest(
-            OffsetDateTime createdAt,
-            PassengerDtos passenger,
-            List<BookingItemDtos.BookingItemRequestDto> items
-    )implements Serializable {}
+        public record BookingItemUpdateRequest(String cabin, BigDecimal price, Integer segmentOrder) implements Serializable {}
 
+        public record BookingItemResponse(Long id, String cabin, BigDecimal price, Integer segmentOrder, Long flight_id, String flight_number) implements Serializable{}
 
     }

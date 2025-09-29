@@ -3,7 +3,7 @@ package com.unimag.dominio.entidades;
 import jakarta.persistence.*;
 import lombok.*;
 
-
+@Data
 @Setter
 @Getter
 @Table(name = "passanger_profiles")
@@ -14,20 +14,15 @@ import lombok.*;
 public class PassengerProfile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "passenger_profile_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String phone;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "country_code")
     private String countryCode;
-
-    //clase hija de Passenger
-    //relacion uno a uno con Passenger
-    @OneToOne
-    @JoinColumn(name = "passenger_id", unique = true)
-    private Passenger passenger;
 
 
 }
