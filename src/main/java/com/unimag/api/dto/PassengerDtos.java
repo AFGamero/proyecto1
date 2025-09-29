@@ -5,18 +5,21 @@ import java.io.Serializable;
 public record PassengerDtos() {
     public record PassengerCreateRequest(
             String fullName,
-            String email
+            String email,
+            PassengerProfileDto profile
     )implements Serializable {}
 
     public record PassengerCreateUpdateRequest(
             String fullName,
-            String email
+            String email,
+            PassengerProfileDto profile
     )implements Serializable {}
 
-    public record  PassengerCreateResponse(
+    public record PassengerResponse(
             Long id,
             String fullName,
-            String email
+            String email,
+            PassengerProfileDto profile
     )implements Serializable {}
 
     public record PassengerProfileDto(

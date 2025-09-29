@@ -4,37 +4,35 @@ import com.unimag.api.dto.PassengerDtos;
 import com.unimag.dominio.entidades.Passenger;
 import com.unimag.dominio.entidades.PassengerProfile;
 
-public class PassengerMapper {public static Passenger ToEntity(PassengerDtos.PassengerCreateRequest request){
-    var profile = request.profile() == null
-            ? null
-            : PassengerProfile.builder().phone(request.().phone())
-            .countryCode(request.passengerProfile().countryCode())
-            .build();
-    return Passenger.builder().fullName(request.fullName())
-            .email(request.email())
-            .passengerProfile(profile)
-            .build();
-}
-    public static PassengerDtos.PassengerCreateResponse toResponse(Passenger passenger) {
-        var p = passenger.getPassengerProfile();
-        var dtoProfile = p == null ? null: new PassengerDtos().PassengerProfileDto(p.getPhone(),  p.getCountryCode());
+public class PassengerMapper {
+    public static Passenger toentity(PassengerDtos.PassengerCreateRequest req) {
+        var profile = req.profile() == null ? null :
+                PassengerProfile.builder().phone(req.profile().phone())
+                .countryCode(req.profile().countryCode()).build();
 
-        return new PassengerDtos().PassengerCreateResponse(passenger.getId(), passenger.getFullName(), passenger.getEmail(),  dtoProfile);
+        return Passenger.builder().fullName(req.fullName())
+                .email(req.email()).passengerProfile(profile).build();
     }
 
-    public  static void path(Passenger entity, PassengerDtos.PassengerCreateRequest request){
-        if (request.fullName() != null ) entity.setFullName(request.fullName());
-        if (request.email() != null) entity.setEmail(request.email());
-        if (request.fullName() != null){
-            var p = entity.getFullName();
-            if (p == null){
-                p = new PassengerDtos.PassengerProfileDto();
-                entity.setFullName(p);
+    public static PassengerDtos.PassengerResponse toResponse(Passenger entity) {
+        var profile = entity.getPassengerProfile() == null ? null :
+                new PassengerDtos.PassengerProfileDto(entity.getPassengerProfile().getPhone(),
+                        entity.getPassengerProfile().getCountryCode());
+        return new PassengerDtos.PassengerResponse(entity.getId(), entity.getFullName(),
+                entity.getEmail(), profile);
+    }
 
-                if(request.profile().phone() != null) p.setPhone(request.profile().phone());
-                if(request.profile().countryCode() != null) p.setCountryCode(request    .profile().countryCode());
+    public static void path(Passenger entity, PassengerDtos.PassengerCreateUpdateRequest req) {
+        if (req.fullName() != null) entity.setFullName(req.fullName());
+        if (req.email() != null) entity.setEmail(req.email());
+        if (req.profile() != null) {
+            var profile = entity.getPassengerProfile();
+            if (profile == null) {
+                profile = new PassengerProfile();
+                entity.setPassengerProfile(profile);
             }
-
+            if (req.profile().phone() != null) profile.setPhone(req.profile().phone());
+            if (req.profile().countryCode() != null) profile.setCountryCode(req.profile().countryCode());
         }
     }
 }
