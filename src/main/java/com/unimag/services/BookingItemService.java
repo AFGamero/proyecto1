@@ -4,9 +4,13 @@ import com.unimag.api.dto.BookingDtos.*;
 import java.util.List;
 
 public interface BookingItemService {
-    BookingItemResponse create(Long bookingId, Long flightId, BookingItemCreateRequest request);
-    BookingItemResponse findById(Long id);
-    List<BookingItemResponse> findByBookingId(Long bookingId);
-    BookingItemResponse update(Long id, BookingItemUpdateRequest request);
-    void deleteById(Long id);
+    //metodos crud para BookingItem
+    BookingItemResponse addItem(Long bookingId, Long flightId, BookingItemCreateRequest req);
+    BookingItemResponse getBookingItem(Long id);
+    void deleteBookingItem(Long id);
+    List<BookingItemResponse> listByBooking(Long bookingId);
+
+    BookingItemResponse updateItem(Long bookingId,Long flightId ,BookingItemUpdateRequest req);
+
+    void removeItem(Long itemId);
 }

@@ -1,7 +1,6 @@
 package com.unimag.services.mappers;
 
 import com.unimag.api.dto.PassengerDtos;
-import com.unimag.api.dto.PassengerProfileDtos;
 import com.unimag.dominio.entidades.Passenger;
 import com.unimag.dominio.entidades.PassengerProfile;
 
@@ -20,7 +19,7 @@ public class PassengerMapper {
         return new PassengerDtos.PassengerResponse(passenger.getId(),  passenger.getFullName(), passenger.getEmail(), dto_profile);
     }
 
-    public static void patch(Passenger entity, PassengerProfileDtos.PassengerUpdateRequest request) {
+    public static void patch(Passenger entity, PassengerDtos.PassengerCreateUpdateRequest request) {
         if (request.fullName() != null) entity.setFullName(request.fullName());
         if (request.email() != null) entity.setEmail(request.email());
         if (request.profile() != null) {

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -23,9 +25,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * Trae una reserva por id precargando items, items.flight y passenger.
      */
     @Query("SELECT b FROM Booking b " +
-            "LEFT JOIN FETCH b.bookingsItems bi " +
+            "LEFT JOIN FETCH b.items bi " +
             "LEFT JOIN FETCH bi.flight " +
             "LEFT JOIN FETCH b.passenger " +
             "WHERE b.id = :id")
     Optional<Booking> findByIdWithDetails(@Param("id") Long id);
+
+    Collection<Object> findbyCreatedAtBetween(OffsetDateTime start, OffsetDateTime end);
 }

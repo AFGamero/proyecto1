@@ -17,11 +17,12 @@ public class BookingMapper {
         return new BookingDtos.BookingResponse(entity.getId(), entity.getCreatedAt(), passengerName, passengerEmail, items);
     }
 
+
     /*----------------------------------------------------------------------------------------------------*/
     //ToEntity method is service's responsibility
 
     public static BookingDtos.BookingItemResponse toItemResponse(BookingItem entity) {
-        return new BookingDtos.BookingItemResponse(entity.getId(), entity.getCabin().name(), entity.getPrice(), entity.getSegmentOrder(),
+        return new BookingDtos.BookingItemResponse(entity.getId(), entity.getCabin().name(), entity.getPrice(), entity.getSegmentOrder(), entity.getBooking().getId(),
                 entity.getFlight().getId(), entity.getFlight().getNumber());
     }
 

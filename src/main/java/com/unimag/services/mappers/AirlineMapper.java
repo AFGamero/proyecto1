@@ -18,8 +18,8 @@ public class AirlineMapper {
     }
 
     public static void patch(Airline entity, AirlineDtos.AirlineUpdateRequest request){
-        if (request.code() != null) entity.setCode(request.code());
-        if (request.name() != null) entity.setName(request.name());
+        if(request.code() != null) entity.setCode(request.code());
+        if(request.name() != null) entity.setName(request.name());
     }
 
 

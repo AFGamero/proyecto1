@@ -17,6 +17,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class PassengerServiceImpl implements PassengerService {
+
+    private final PassengerRepository repo;
+
     @Override
     public PassengerDtos.PassengerResponse create(PassengerDtos.PassengerCreateRequest request) {
         Passenger saved = repo.save(PassengerMapper.toEntity(request));
@@ -28,7 +31,9 @@ public class PassengerServiceImpl implements PassengerService {
     public PassengerDtos.PassengerResponse update(Long ID, PassengerDtos.PassengerCreateUpdateRequest request) {
        Passenger passenger = repo.findById(ID)
                .orElseThrow(() -> new RuntimeException("Passenger with id " + ID + " not found"));
-        return null;
+        PassengerMapper.patch (passenger,request);
+
+        return PassengerMapper.toResponse(repo.save(passenger));
     }
 
     @Override
@@ -39,9 +44,10 @@ public class PassengerServiceImpl implements PassengerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PassengerDtos.PassengerResponse> findAll() {
         //To Do
-        return List.of();
+        return repo.findAll(Pageable.unpaged()).map(PassengerMapper::toResponse).getContent();
     }
 
     @Override
@@ -53,10 +59,10 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public void deleteById(Long id) {
         //To Do
+        repo.deleteById(id);
     }
 
 //add
-    private final PassengerRepository repo;
 
 
 }

@@ -12,21 +12,13 @@ public class AirportMapper {
                 .build();
     }
 
-    public static Airport toResponse(Airport airport) {
-        return Airport.builder()
-                .id(airport.getId())
-                .code(airport.getCode())
-                .name(airport.getName())
-                .city(airport.getCity())
-                .build();
+    public static AirportDtos.AirportResponse toResponse(Airport airport) {
+
+        return new AirportDtos.AirportResponse(airport.getId(), airport.getCode(), airport.getName(), airport.getCity());
     }
 
-    public static void path(Airport entity, String code, String name, String city, String country) {
-        if (code != null) entity.setCode(code);
-        if (name != null) entity.setName(name);
-        if (city != null) entity.setCity(city);
+    public static void path(Airport entity, AirportDtos.AirportUpdateRequest update) {
+        String code = update.code();
+        String name = update.name();
     }
-
-
-
 }
