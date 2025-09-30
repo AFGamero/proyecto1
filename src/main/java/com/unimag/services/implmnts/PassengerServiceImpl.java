@@ -1,21 +1,22 @@
-package com.unimag.services;
+package com.unimag.services.implmnts;
 
 
 import com.unimag.api.dto.PassengerDtos;
 import com.unimag.dominio.entidades.Passenger;
 import com.unimag.dominio.repositories.PassengerRepository;
+import com.unimag.services.PassengerService;
 import com.unimag.services.mappers.PassengerMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class PassengerServiceImpl  implements PassengerService {
+public class PassengerServiceImpl implements PassengerService {
     @Override
     public PassengerDtos.PassengerResponse create(PassengerDtos.PassengerCreateRequest request) {
         Passenger saved = repo.save(PassengerMapper.toEntity(request));
@@ -38,21 +39,22 @@ public class PassengerServiceImpl  implements PassengerService {
     }
 
     @Override
+    public List<PassengerDtos.PassengerResponse> findAll() {
+        //To Do
+        return List.of();
+    }
+
+    @Override
     public PassengerDtos.PassengerResponse getById(Long id) {
         return repo.findById(id).map(PassengerMapper::toResponse)
                 .orElseThrow(() -> new RuntimeException("Passenger with id " + id + " not found"));
     }
 
     @Override
-    public List<PassengerDtos.PassengerResponse> List(org.springframework.data.domain.Pageable pagination) {
-        return repo.findAll(pagination).map(PassengerMapper::toResponse).;
+    public void deleteById(Long id) {
+        //To Do
     }
 
-
-    @Override
-    public void delete(Long id) {
-
-    }
 
     private final PassengerRepository repo;
 
