@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,4 +33,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findByIdWithDetails(@Param("id") Long id);
 
     Collection<Object> findbyCreatedAtBetween(OffsetDateTime start, OffsetDateTime end);
+
+    List<Booking> findByPassenger_EmailIgnoreCaseOrderByCreatedAtDesc(String passengerEmail);
 }

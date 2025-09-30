@@ -1,4 +1,4 @@
-package com.unimag.repositories;
+package com.unimag.dominio.repositories;
 
 import com.unimag.dominio.entidades.Airline;
 import com.unimag.dominio.entidades.Airport;

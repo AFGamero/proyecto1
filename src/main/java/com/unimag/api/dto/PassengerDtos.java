@@ -4,7 +4,7 @@ import com.unimag.dominio.entidades.Passenger;
 
 import java.io.Serializable;
 
-public record PassengerDtos extends Passenger {
+public record PassengerDtos() {
     public record PassengerCreateRequest(
             String fullName,
             String email,

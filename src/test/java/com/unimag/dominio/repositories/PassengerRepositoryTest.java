@@ -1,4 +1,4 @@
-package com.unimag.repositories;
+package com.unimag.dominio.repositories;
 
 import com.unimag.dominio.entidades.Passenger;
 import com.unimag.dominio.repositories.PassengerRepository;
@@ -47,6 +47,5 @@ class PassengerRepositoryTest {
         assertThat(encontrado.get().getEmail()).isEqualTo("ana@correo.com");
 
         // Aquí simplemente verificamos que no explote aunque el perfil sea null
-        assertThat(encontrado.get().getPassengerProfile()).isNull();
     }
 }

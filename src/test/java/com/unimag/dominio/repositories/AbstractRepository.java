@@ -1,4 +1,4 @@
-package com.unimag.repositories;
+package com.unimag.dominio.repositories;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.ActiveProfiles;

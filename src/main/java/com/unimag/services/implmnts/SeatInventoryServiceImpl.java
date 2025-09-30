@@ -40,8 +40,7 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
                         "Flight %d not found".formatted(flightId)
                 ));
 
-        // 2. Validar que no exista ya un inventario para esa cabina en ese vuelo
-        // (hay UK(flight_id, cabin), así que esto violará constraint si existe)
+
         Cabin cabin = Cabin.valueOf(request.cabin().toUpperCase());
         if (repo.findByFlightIdAndCabin(flightId, cabin).isPresent()) {
             throw new IllegalStateException(
@@ -50,11 +49,10 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
             );
         }
 
-        // 3. Crear entidad y asignar vuelo
+
         SeatInventory seatInventory = SeatInventoryMapper.toEntity(request);
         seatInventory.setFlight(flight);
 
-        // 4. Guardar y retornar
         return SeatInventoryMapper.toResponse(repo.save(seatInventory));
     }
 
@@ -82,10 +80,8 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
             throw new NotFoundException("Flight %d not found".formatted(flightId));
         }
 
-        // Convertir string a enum
         Cabin cabinEnum = Cabin.valueOf(cabin.toUpperCase());
 
-        // Buscar inventario específico (UK garantiza 0..1 resultado)
         return repo.findByFlightIdAndCabin(flightId, cabinEnum)
                 .map(SeatInventoryMapper::toResponse)
                 .orElseThrow(() -> new NotFoundException(
@@ -100,13 +96,11 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
     @Override
     @Transactional(readOnly = true)
     public List<SeatInventoryResponse> findByFlightId(Long flightId) {
-        // Validar que el vuelo existe
+
         if (!flightRepo.existsById(flightId)) {
             throw new NotFoundException("Flight %d not found".formatted(flightId));
         }
 
-        // Retornar lista de inventarios (una por cada cabina configurada)
-        // Típicamente: ECONOMY, BUSINESS, FIRST_CLASS
         return Arrays.stream(Cabin.values())
                 .map(cabin -> repo.findByFlightIdAndCabin(flightId, cabin))
                 .filter(Optional::isPresent)
@@ -120,13 +114,12 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
     // ═══════════════════════════════════════════════════════════
     @Override
     public SeatInventoryResponse update(Long id, SeatInventoryUpdateRequest request) {
-        // 1. Buscar inventario existente
+
         SeatInventory seatInventory = repo.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         "SeatInventory %d not found".formatted(id)
                 ));
 
-        // 2. Validaciones de integridad
         Integer newTotal = request.totalSeats() != null
                 ? request.totalSeats()
                 : seatInventory.getTotalSeats();
@@ -148,16 +141,11 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
             );
         }
 
-        // 3. Aplicar cambios (dirty checking hace el update)
         SeatInventoryMapper.patch(seatInventory, request);
 
-        // 4. Retornar
         return SeatInventoryMapper.toResponse(seatInventory);
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // ELIMINAR SEAT INVENTORY
-    // ═══════════════════════════════════════════════════════════
     @Override
     public void deleteById(Long id) {
         if (!repo.existsById(id)) {
@@ -166,43 +154,28 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
         repo.deleteById(id);
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // VERIFICAR DISPONIBILIDAD
-    // Usa el método optimizado hasMinimumSeatsAvailable del repo
-    // ═══════════════════════════════════════════════════════════
     @Override
     @Transactional(readOnly = true)
     public boolean checkAvailability(Long flightId, String cabin, Integer minSeats) {
-        // Validar parámetros
         if (minSeats == null || minSeats <= 0) {
             throw new IllegalArgumentException("minSeats must be positive");
         }
 
-        // Validar que el vuelo existe
         if (!flightRepo.existsById(flightId)) {
             throw new NotFoundException("Flight %d not found".formatted(flightId));
         }
 
-        // Convertir string a enum
         Cabin cabinEnum = Cabin.valueOf(cabin.toUpperCase());
 
-        // Usar query optimizada del repository
-        // No trae la entidad completa, solo ejecuta COUNT en DB
         return repo.hasMinimumSeatsAvailable(flightId, cabinEnum, minSeats);
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // RESERVAR ASIENTOS
-    // Reduce availableSeats (cuando se crea un BookingItem)
-    // ═══════════════════════════════════════════════════════════
     @Override
     public SeatInventoryResponse reserveSeats(Long flightId, String cabin, Integer seats) {
         // 1. Validar parámetros
         if (seats == null || seats <= 0) {
             throw new IllegalArgumentException("Seats must be positive");
         }
-
-        // 2. Buscar inventario (UK garantiza unicidad)
         Cabin cabinEnum = Cabin.valueOf(cabin.toUpperCase());
         SeatInventory inventory = repo.findByFlightIdAndCabin(flightId, cabinEnum)
                 .orElseThrow(() -> new NotFoundException(
@@ -210,7 +183,6 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
                                 .formatted(flightId, cabin)
                 ));
 
-        // 3. Verificar disponibilidad suficiente
         if (inventory.getAvailableSeats() < seats) {
             throw new IllegalStateException(
                     "Not enough seats available. Requested: %d, Available: %d"
@@ -225,18 +197,12 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
         return SeatInventoryMapper.toResponse(inventory);
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // LIBERAR ASIENTOS
-    // Aumenta availableSeats (cuando se cancela un BookingItem)
-    // ═══════════════════════════════════════════════════════════
     @Override
     public SeatInventoryResponse releaseSeats(Long flightId, String cabin, Integer seats) {
-        // 1. Validar parámetros
         if (seats == null || seats <= 0) {
             throw new IllegalArgumentException("Seats must be positive");
         }
 
-        // 2. Buscar inventario
         Cabin cabinEnum = Cabin.valueOf(cabin.toUpperCase());
         SeatInventory inventory = repo.findByFlightIdAndCabin(flightId, cabinEnum)
                 .orElseThrow(() -> new NotFoundException(
@@ -244,10 +210,8 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
                                 .formatted(flightId, cabin)
                 ));
 
-        // 3. Calcular nuevo valor
         int newAvailable = inventory.getAvailableSeats() + seats;
 
-        // 4. Validar que no exceda el total
         if (newAvailable > inventory.getTotalSeats()) {
             throw new IllegalStateException(
                     "Cannot release %d seats. Would exceed total seats. " +
@@ -257,10 +221,8 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
             );
         }
 
-        // 5. Aumentar asientos disponibles
         inventory.setAvailableSeats(newAvailable);
 
-        // 6. Retornar
         return SeatInventoryMapper.toResponse(inventory);
     }
 }
