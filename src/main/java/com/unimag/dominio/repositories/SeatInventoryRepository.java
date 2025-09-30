@@ -22,6 +22,9 @@ public interface SeatInventoryRepository extends JpaRepository<SeatInventory, Lo
      * Verifica si availableSeats >= min para ese vuelo y cabina.
      * Útil para filtros rápidos antes de crear una reserva.
      */
+
+
+
     @Query("SELECT CASE WHEN si.availableSeats >= :min THEN true ELSE false END " +
             "FROM SeatInventory si WHERE si.flight.id = :flightId AND si.cabin = :cabin")
     boolean hasMinimumSeatsAvailable(@Param("flightId") Long flightId,

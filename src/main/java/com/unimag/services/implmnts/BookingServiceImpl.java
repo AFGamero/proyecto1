@@ -54,11 +54,16 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtos.BookingResponse updateBooking(Long id, Long passenger_id) {
-        return null;
+      Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking with id " + id + " not found"));
+        var passenger = passengerRepository.findById(passenger_id)
+                .orElseThrow(() -> new RuntimeException("Passenger with id " + passenger_id + " not found"));
+        booking.setPassenger(passenger);
+        return BookingMapper.toResponse(bookingRepository.save(booking));
     }
 
     @Override
     public void deleteBooking(Long id) {
-
+        bookingRepository.deleteById(id);
     }
 }
