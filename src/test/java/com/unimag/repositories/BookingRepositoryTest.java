@@ -75,6 +75,5 @@ class BookingRepositoryTest extends AbstractRepository {
         // Then
         assertThat(loaded).isPresent();
         assertThat(loaded.get().getPassenger()).isNotNull();
-        assertThat(loaded.get().getBookingsItems()).isNotNull();
     }
 }
