@@ -1,26 +1,30 @@
 package com.unimag.services.mappers;
-
-import com.unimag.api.dto.SeatInventoryDtos;
+import com.unimag.api.dto.SeatInventoryDtos.*;
 import com.unimag.dominio.entidades.Cabin;
-import com.unimag.dominio.entidades.Flight;
 import com.unimag.dominio.entidades.SeatInventory;
+import org.mapstruct.*;
 
-public class SeatInventoryMapper {
-    public static SeatInventory toEntity(SeatInventoryDtos.SeatInventoryCreateRequest request) {
-        return SeatInventory.builder().cabin(Cabin.valueOf(request.cabin())).availableSeats(request.availableSeats())
-                .totalSeats(request.availableSeats()).build();
-    }
+import java.util.List;
 
-    public static SeatInventoryDtos.SeatInventoryResponse toResponse(SeatInventory seatInventory) {
-        return new SeatInventoryDtos.SeatInventoryResponse(
-                seatInventory.getId(), seatInventory.getCabin().name(),
-                seatInventory.getTotalSeats(), seatInventory.getAvailableSeats(), seatInventory.getFlight().getId()
-        );
-    }
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface SeatInventoryMapper {
 
-    public static void patch(SeatInventory entity, SeatInventoryDtos.SeatInventoryUpdateRequest update) {
-        if (update.cabin() != null) entity.setCabin(Cabin.valueOf(update.cabin()));
-        if (update.totalSeats() != null) entity.setTotalSeats(update.totalSeats());
-        if (update.availableSeats() != null) entity.setAvailableSeats(update.availableSeats());
+    @Mapping(target = "flight", ignore = true)
+    @Mapping(target = "cabin", source = "cabin")
+    SeatInventory toEntity(SeatInventoryCreateRequest request);
+
+    @Mapping(source = "flight.id", target = "flight_id")
+    @Mapping(target = "cabin", expression = "java(seatInventory.getCabin().name())")
+    SeatInventoryResponse toResponse(SeatInventory seatInventory);
+
+    List<SeatInventoryResponse> toResponseList(List<SeatInventory> seatInventories);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "flight", ignore = true)
+    void updateEntityFromRequest(SeatInventoryUpdateRequest request, @MappingTarget SeatInventory seatInventory);
+
+    // Helper para convertir String a Cabin enum
+    default Cabin mapCabin(String cabin) {
+        return cabin != null ? Cabin.valueOf(cabin.toUpperCase()) : null;
     }
 }

@@ -1,36 +1,40 @@
 package com.unimag.services.mappers;
 
-import com.unimag.api.dto.BookingDtos;
+import com.unimag.api.dto.BookingDtos.*;
 import com.unimag.dominio.entidades.Booking;
 import com.unimag.dominio.entidades.BookingItem;
-import com.unimag.dominio.entidades.Cabin;
-import com.unimag.dominio.entidades.Passenger;
+import org.mapstruct.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class BookingMapper {
-    public static BookingDtos.BookingResponse toResponse(Booking entity) {
-        var items = entity.getItems() == null? List.<BookingDtos.BookingItemResponse>of() : entity.getItems().stream().map(BookingMapper::toItemResponse).toList();
-        var passengerName = entity.getPassenger() == null? null: entity.getPassenger().getFullName();
-        var passengerEmail = entity.getPassenger() == null? null: entity.getPassenger().getEmail();
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface BookingMapper {
 
-        return new BookingDtos.BookingResponse(entity.getId(), entity.getCreatedAt(), passengerName, passengerEmail, items);
+    @Mapping(target = "passenger", ignore = true)
+    @Mapping(target = "items", ignore = true)
+    Booking toEntity(BookingCreateRequest request);
+
+    @Mapping(source = "passenger.fullName", target = "passenger_name")
+    @Mapping(source = "passenger.email", target = "passenger_email")
+    @Mapping(target = "items", expression = "java(mapBookingItems(booking.getItems()))")
+    BookingResponse toResponse(Booking booking);
+
+    List<BookingResponse> toResponseList(List<Booking> bookings);
+
+    // Mapeo manual de BookingItems
+    default List<BookingItemResponse> mapBookingItems(List<BookingItem> items) {
+        if (items == null) return null;
+        return items.stream()
+                .map(item -> new BookingItemResponse(
+                        item.getId(),
+                        item.getCabin().name(),
+                        item.getPrice(),
+                        item.getSegmentOrder(),
+                        item.getBooking().getId(),
+                        item.getFlight().getId(),
+                        item.getFlight().getNumber()
+                ))
+                .collect(Collectors.toList());
     }
-
-
-    /*----------------------------------------------------------------------------------------------------*/
-    //ToEntity method is service's responsibility
-
-    public static BookingDtos.BookingItemResponse toItemResponse(BookingItem entity) {
-        return new BookingDtos.BookingItemResponse(entity.getId(), entity.getCabin().name(), entity.getPrice(), entity.getSegmentOrder(), entity.getBooking().getId(),
-                entity.getFlight().getId(), entity.getFlight().getNumber());
-    }
-
-    public static void itemPatch(BookingItem entity, BookingDtos.BookingItemUpdateRequest request) {
-        if (request.cabin() != null) entity.setCabin(Cabin.valueOf(request.cabin().toUpperCase()));
-        if (request.price() != null) entity.setPrice(request.price());
-        if (request.segmentOrder() != null) entity.setSegmentOrder(request.segmentOrder());
-    }
-
-    public static void addItem(BookingItem item, Booking booking){ booking.addItem(item); }
 }

@@ -1,41 +1,29 @@
 package com.unimag.services.mappers;
 
-import com.unimag.api.dto.FlightDtos;
-import com.unimag.api.dto.TagDtos;
+import com.unimag.api.dto.FlightDtos.*;
 import com.unimag.dominio.entidades.Flight;
-import com.unimag.dominio.entidades.Tag;
+import org.mapstruct.*;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
-public class FlightMapper {
-    public static Flight ToEntity(FlightDtos.FlightCreateRequest request) {
-        return Flight.builder().number(request.number()).arrivalTime(request.arrivalTime())
-                .departureTime(request.departureTime()).build();
-    }
+@Mapper(componentModel = "spring", uses = {TagMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface FlightMapper {
 
-    //Check out this method, 'cause how can I get the seatsInventory of a flight when the flight doesn't have a collection of them?
-    public static FlightDtos.FlightResponse toResponse(Flight flight) {
-        Set<TagDtos.TagResponse> tagResponses = flight.getTags() == null ? Set.of() :
-                flight.getTags().stream()
-                        .map(tag -> new TagDtos.TagResponse(tag.getId(), tag.getName()))
-                        .collect(Collectors.toSet());
+    @Mapping(target = "airline", ignore = true)
+    @Mapping(target = "origin", ignore = true)
+    @Mapping(target = "destination", ignore = true)
+    Flight toEntity(FlightCreateRequest request);
 
-        return  new FlightDtos.FlightResponse(flight.getId(), flight.getNumber(), flight.getDepartureTime(),
-                flight.getArrivalTime(), flight.getAirline() != null ? flight.getAirline().getId() : null,
-                flight.getOrigin() != null ? flight.getOrigin().getId() : null,
-                flight.getDestination() != null ? flight.getDestination().getId() : null,tagResponses
-        );
-    }
+    @Mapping(source = "airline.id", target = "airline_id")
+    @Mapping(source = "origin.id", target = "origin_airport_id")
+    @Mapping(source = "destination.id", target = "destination_airport_id")
+    FlightResponse toResponse(Flight flight);
 
-    public static void patch(Flight entity, FlightDtos.FlightUpdateRequest request ) {
-        if (request.number() != null ) entity.setNumber(request.number());
-        if (request.departureTime() != null ) entity.setDepartureTime(request.departureTime());
-        if (request.arrivalTime() != null ) entity.setArrivalTime(request.arrivalTime());
-    }
+    List<FlightResponse> toResponseList(List<Flight> flights);
 
-    public static void addTag(Flight flight, Tag tag) {
-        flight.addTag(tag);
-    }
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "airline", ignore = true)
+    @Mapping(target = "origin", ignore = true)
+    @Mapping(target = "destination", ignore = true)
+    void updateEntityFromRequest(FlightUpdateRequest request, @MappingTarget Flight flight);
 }

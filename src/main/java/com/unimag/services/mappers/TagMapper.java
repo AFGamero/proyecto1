@@ -1,17 +1,16 @@
 package com.unimag.services.mappers;
 
-import com.unimag.api.dto.FlightDtos;
-import com.unimag.api.dto.TagDtos;
+import com.unimag.api.dto.TagDtos.*;
 import com.unimag.dominio.entidades.Tag;
+import org.mapstruct.*;
 
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-public class TagMapper {
-    public static Tag toEntity(TagDtos.TagCreateRequest request){
-        return  Tag.builder().name(request.name()).build();
-    }
-    public static TagDtos.TagResponse toResponse(Tag tag){
-        return new TagDtos.TagResponse(tag.getId(), tag.getName());
-    }
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface TagMapper {
+    Tag toEntity(TagCreateRequest request);
+    TagResponse toResponse(Tag tag);
+    List<TagResponse> toResponseList(List<Tag> tags);
+    Set<TagResponse> toResponseSet(Set<Tag> tags);
 }
