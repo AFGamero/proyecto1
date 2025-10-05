@@ -1,6 +1,9 @@
 package com.unimag.services;
 
-import com.unimag.api.dto.BookingDtos.*;
+import com.unimag.api.dto.BookingDtos.BookingItemCreateRequest;
+import com.unimag.api.dto.BookingDtos.BookingItemResponse;
+import com.unimag.api.dto.BookingDtos.BookingItemUpdateRequest;
+
 import java.util.List;
 
 public interface BookingItemService {

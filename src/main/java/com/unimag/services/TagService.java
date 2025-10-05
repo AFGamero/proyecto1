@@ -1,6 +1,8 @@
 package com.unimag.services;
 
-import com.unimag.api.dto.TagDtos.*;
+import com.unimag.api.dto.TagDtos.TagCreateRequest;
+import com.unimag.api.dto.TagDtos.TagResponse;
+
 import java.util.List;
 
 public interface TagService {

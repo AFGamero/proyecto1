@@ -1,6 +1,9 @@
 package com.unimag.services;
 
-import com.unimag.api.dto.SeatInventoryDtos.*;
+import com.unimag.api.dto.SeatInventoryDtos.SeatInventoryCreateRequest;
+import com.unimag.api.dto.SeatInventoryDtos.SeatInventoryResponse;
+import com.unimag.api.dto.SeatInventoryDtos.SeatInventoryUpdateRequest;
+
 import java.util.List;
 
 public interface SeatInventoryService {

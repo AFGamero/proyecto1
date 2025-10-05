@@ -1,10 +1,6 @@
 package com.unimag.services.implmnts;
 
 import com.unimag.api.dto.BookingDtos;
-import com.unimag.dominio.entidades.Booking;
-import com.unimag.dominio.entidades.BookingItem;
-import com.unimag.dominio.entidades.Cabin;
-import com.unimag.dominio.entidades.Flight;
 import com.unimag.dominio.repositories.BookingItemRepository;
 import com.unimag.dominio.repositories.BookingRepository;
 import com.unimag.dominio.repositories.FlightRepository;
@@ -21,28 +17,29 @@ import java.util.List;
 @Transactional
 public class BookingItemServiceImpl implements BookingItemService {
     private final BookingItemRepository bookingItemRepository;
-    private final BookingRepository bookingRepository ;
+    private final BookingRepository bookingRepository;
     private final FlightRepository flightRepository;
+    private final BookingMapper bookingMapper;
 
 
     @Override
     public BookingDtos.BookingItemResponse addItem(Long bookingId, Long flightId, BookingDtos.BookingItemCreateRequest req) {
-        Booking booking = bookingRepository.findById(bookingId)
+        var booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking with id " + bookingId + " not found"));
         // To Do: Validar que el vuelo exista
-        Flight flight = flightRepository.findById(flightId)
+        var flight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new RuntimeException("Flight with id " + flightId + " not found"));
 
-        BookingItem item =BookingItem.builder().cabin(Cabin.valueOf(req.cabin())).price(req.price()).flight(flight).build();
-        BookingMapper.addItem(item, booking);
+        var item = bookingMapper.toItemEntity(req);
+        booking.addItem(item);
 
-        return BookingMapper.toItemResponse(item);
+        return bookingMapper.toItemResponse(item);
     }
 
     @Override
     public BookingDtos.BookingItemResponse getBookingItem(Long id) {
 
-        return bookingItemRepository.findById(id).map(BookingMapper::toItemResponse)
+        return bookingItemRepository.findById(id).map(bookingMapper::toItemResponse)
                 .orElseThrow(() -> new RuntimeException("Booking item with id " + id + " not found"));
     }
 
@@ -57,7 +54,7 @@ public class BookingItemServiceImpl implements BookingItemService {
                 .orElseThrow(() -> new RuntimeException("Booking with id " + bookingId + " not found"));
 
         return bookingItemRepository.findByBookingIdOrderBySegmentOrder(booking.getId())
-                .stream().map(BookingMapper::toItemResponse).toList();
+                .stream().map(bookingMapper::toItemResponse).toList();
     }
 
     @Override
@@ -69,7 +66,7 @@ public class BookingItemServiceImpl implements BookingItemService {
             .orElseThrow(() -> new RuntimeException("Flight with id " + flightId + " not found"));
 
     bookingItem.setFlight(flight);
-        return BookingMapper.toItemResponse(bookingItem);
+        return bookingMapper.toItemResponse(bookingItem);
     }
 
 

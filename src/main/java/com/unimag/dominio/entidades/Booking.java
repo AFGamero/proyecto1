@@ -29,7 +29,7 @@ public class Booking {
     @JoinColumn(name = "passenger_id")
     private Passenger passenger;
 
-    @OneToMany(mappedBy = "bookingItems", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
     private List<BookingItem> items;
 
     public void addItem(BookingItem bookingItem) {

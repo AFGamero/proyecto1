@@ -16,38 +16,36 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class AirlineServiceImpl implements AirlineService {
+    private final AirlineRepository repo;
+    private final AirlineMapper airlineMapper;
     @Override
     public AirlineDtos.AirlineResponse create(AirlineDtos.AirlineCreateRequest request) {
-        return AirlineMapper.toResponse(repo.save(AirlineMapper.toEntity(request)));
+        return airlineMapper.toResponse(repo.save(airlineMapper.toEntity(request)));
     }
 
     @Override
     @Transactional(readOnly = true)
     public AirlineDtos.AirlineResponse findById(Long id) {
-        return repo.findById(id).map(AirlineMapper::toResponse)
-                .orElseThrow(() -> new RuntimeException("Airline with id " + id + " not found"));
+        return repo.findById(id).map(airlineMapper::toResponse)
+                .orElseThrow(() -> new NotFoundException("Airline with id " + id + " not found"));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<AirlineDtos.AirlineResponse> findAll() {
-        return repo.findAll().stream().map(AirlineMapper::toResponse).toList();
+        return repo.findAll().stream().map(airlineMapper::toResponse).toList();
     }
 
         @Override
         public AirlineDtos.AirlineResponse update(Long id, AirlineDtos.AirlineUpdateRequest request) {
             Airline airline = repo.findById(id).orElseThrow(() -> new NotFoundException("Airline with id " + id + " not found"));
-            AirlineMapper.patch(airline, request);
-            return AirlineMapper.toResponse(airline);
+            airlineMapper.patch(request, airline);
+            return airlineMapper.toResponse(airline);
         }
 
     @Override
     public void deleteById(Long id) {
         repo.deleteById(id);
     }
-
-    private final AirlineRepository repo ;
-
-
 
 }

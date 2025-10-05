@@ -1,7 +1,5 @@
 package com.unimag.api.dto;
 
-import com.unimag.dominio.entidades.Passenger;
-
 import java.io.Serializable;
 
 public record PassengerDtos() {
@@ -11,7 +9,7 @@ public record PassengerDtos() {
             PassengerProfileDto profile
     )implements Serializable {}
 
-    public record PassengerCreateUpdateRequest(
+    public record PassengerUpdateRequest(
             String fullName,
             String email,
             PassengerProfileDto profile

@@ -14,9 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +22,7 @@ import java.util.List;
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final PassengerRepository passengerRepository;
+    private final BookingMapper bookingMapper;
 
     @Override
     public BookingDtos.BookingResponse createBooking(BookingDtos.BookingCreateRequest request) {
@@ -31,12 +30,12 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new RuntimeException("Passenger with id " + request.passenger_id() + " not found"));
         var booking = Booking.builder().createdAt(OffsetDateTime.now()).passenger(Passenger).build();
 
-        return BookingMapper.toResponse(bookingRepository.save(booking));
+        return bookingMapper.toResponse(bookingRepository.save(booking));
     }
 
     @Override
     public BookingDtos.BookingResponse getBooking(Long id) {
-        return bookingRepository.findById(id).map(BookingMapper::toResponse).orElseThrow(
+        return bookingRepository.findById(id).map(bookingMapper::toResponse).orElseThrow(
                 () -> new NotFoundException("Booking %d not found.".formatted(id))
         );
     }
@@ -59,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
         var passenger = passengerRepository.findById(passenger_id)
                 .orElseThrow(() -> new RuntimeException("Passenger with id " + passenger_id + " not found"));
         booking.setPassenger(passenger);
-        return BookingMapper.toResponse(bookingRepository.save(booking));
+        return bookingMapper.toResponse(bookingRepository.save(booking));
     }
 
     @Override

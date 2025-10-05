@@ -1,6 +1,9 @@
 package com.unimag.services;
 
-import com.unimag.api.dto.AirlineDtos.*;
+import com.unimag.api.dto.AirlineDtos.AirlineCreateRequest;
+import com.unimag.api.dto.AirlineDtos.AirlineResponse;
+import com.unimag.api.dto.AirlineDtos.AirlineUpdateRequest;
+
 import java.util.List;
 
 public interface AirlineService {
