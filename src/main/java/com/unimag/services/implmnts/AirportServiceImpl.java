@@ -15,30 +15,31 @@ import java.util.List;
 @Transactional
 public class AirportServiceImpl implements AirportService  {
   private final AirportRepository repo;
+  private final AirportMapper airportMapper;
 
     @Override
     public AirportDtos.AirportResponse create(AirportDtos.AirportCreateRequest request) {
-        Airport saved = repo.save(AirportMapper.toEntity(request));
-        return AirportMapper.toResponse(saved);
+        Airport saved = repo.save(airportMapper.toEntity(request));
+        return airportMapper.toResponse(saved);
     }
 
     @Override
     public AirportDtos.AirportResponse findById(Long id) {
 
-        return repo.findById(id).map(AirportMapper::toResponse)
+        return repo.findById(id).map(airportMapper::toResponse)
                 .orElseThrow(() -> new RuntimeException("Airport with id " + id + " not found"));
     }
 
     @Override
     public List<AirportDtos.AirportResponse> findAll() {
-        return repo.findAll().stream().map(AirportMapper::toResponse).toList();
+        return repo.findAll().stream().map(airportMapper::toResponse).toList();
     }
 
     @Override
     public AirportDtos.AirportResponse update(Long id, AirportDtos.AirportUpdateRequest request) {
         Airport airport = repo.findById(id).orElseThrow(() -> new RuntimeException("Airport with id " + id + " not found"));
-        AirportMapper.path(airport, request);
-        return AirportMapper.toResponse(repo.save(airport));
+        airportMapper.updateEntityFromRequest(request,airport);
+        return airportMapper.toResponse(repo.save(airport));
     }
 
     @Override

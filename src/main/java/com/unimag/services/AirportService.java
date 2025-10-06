@@ -1,6 +1,9 @@
 package com.unimag.services;
 
-import com.unimag.api.dto.AirportDtos.*;
+import com.unimag.api.dto.AirportDtos.AirportCreateRequest;
+import com.unimag.api.dto.AirportDtos.AirportResponse;
+import com.unimag.api.dto.AirportDtos.AirportUpdateRequest;
+
 import java.util.List;
 
 public interface AirportService {

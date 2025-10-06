@@ -4,6 +4,7 @@ import com.unimag.api.dto.AirportDtos;
 import com.unimag.dominio.entidades.Airport;
 import com.unimag.dominio.repositories.AirportRepository;
 import com.unimag.services.implmnts.AirportServiceImpl;
+import com.unimag.services.mappers.AirportMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,12 +24,11 @@ class AirportServiceImplTest {
     @Mock
     AirportRepository repo;
 
+    @Mock
+    AirportMapper airportMapper;
+
     @InjectMocks
     AirportServiceImpl service;
-
-    // ═══════════════════════════════════════════════════════════
-    // CREATE AIRPORT
-    // ═══════════════════════════════════════════════════════════
 
     @Test
     void shouldCreateAirportAndReturnToResponse() {
@@ -37,14 +37,26 @@ class AirportServiceImplTest {
                 "BOG",
                 "El Dorado International Airport",
                 "Bogota"
-
         );
 
-        when(repo.save(any())).thenAnswer(inv -> {
-            Airport a = inv.getArgument(0);
-            a.setId(1L);
-            return a;
-        });
+        var airport = Airport.builder()
+                .code("BOG")
+                .name("El Dorado International Airport")
+                .city("Bogota")
+                .build();
+
+        var savedAirport = Airport.builder()
+                .id(1L)
+                .code("BOG")
+                .name("El Dorado International Airport")
+                .city("Bogota")
+                .build();
+
+        var response = new AirportDtos.AirportResponse(1L, "BOG", "El Dorado International Airport", "Bogota");
+
+        when(airportMapper.toEntity(request)).thenReturn(airport);
+        when(repo.save(airport)).thenReturn(savedAirport);
+        when(airportMapper.toResponse(savedAirport)).thenReturn(response);
 
         // ACT
         var res = service.create(request);
@@ -55,12 +67,10 @@ class AirportServiceImplTest {
         assertThat(res.name()).isEqualTo("El Dorado International Airport");
         assertThat(res.city()).isEqualTo("Bogota");
 
-        verify(repo).save(any(Airport.class));
+        verify(airportMapper).toEntity(request);
+        verify(repo).save(airport);
+        verify(airportMapper).toResponse(savedAirport);
     }
-
-    // ═══════════════════════════════════════════════════════════
-    // FIND BY ID
-    // ═══════════════════════════════════════════════════════════
 
     @Test
     void shouldFindAirportById() {
@@ -72,18 +82,22 @@ class AirportServiceImplTest {
                 .city("Medellin")
                 .build();
 
+        var response = new AirportDtos.AirportResponse(10L, "MDE", "Jose Maria Cordova", "Medellin");
+
         when(repo.findById(10L)).thenReturn(Optional.of(airport));
+        when(airportMapper.toResponse(airport)).thenReturn(response);
 
         // ACT
-        var response = service.findById(10L);
+        var result = service.findById(10L);
 
         // ASSERT
-        assertThat(response.id()).isEqualTo(10L);
-        assertThat(response.code()).isEqualTo("MDE");
-        assertThat(response.name()).isEqualTo("Jose Maria Cordova");
-        assertThat(response.city()).isEqualTo("Medellin");
+        assertThat(result.id()).isEqualTo(10L);
+        assertThat(result.code()).isEqualTo("MDE");
+        assertThat(result.name()).isEqualTo("Jose Maria Cordova");
+        assertThat(result.city()).isEqualTo("Medellin");
 
         verify(repo).findById(10L);
+        verify(airportMapper).toResponse(airport);
     }
 
     @Test
@@ -97,37 +111,24 @@ class AirportServiceImplTest {
                 .hasMessageContaining("Airport with id 999 not found");
 
         verify(repo).findById(999L);
+        verifyNoInteractions(airportMapper);
     }
-
-    // ═══════════════════════════════════════════════════════════
-    // FIND ALL
-    // ═══════════════════════════════════════════════════════════
 
     @Test
     void shouldListAllAirports() {
         // ARRANGE
-        when(repo.findAll()).thenReturn(
-                List.of(
-                        Airport.builder()
-                                .id(1L)
-                                .code("BOG")
-                                .name("El Dorado")
-                                .city("Bogota")
-                                .build(),
-                        Airport.builder()
-                                .id(2L)
-                                .code("CLO")
-                                .name("Alfonso Bonilla Aragon")
-                                .city("Cali")
-                                .build(),
-                        Airport.builder()
-                                .id(3L)
-                                .code("MIA")
-                                .name("Miami International")
-                                .city("Miami")
-                                .build()
-                )
-        );
+        var airport1 = Airport.builder().id(1L).code("BOG").name("El Dorado").city("Bogota").build();
+        var airport2 = Airport.builder().id(2L).code("CLO").name("Alfonso Bonilla Aragon").city("Cali").build();
+        var airport3 = Airport.builder().id(3L).code("MIA").name("Miami International").city("Miami").build();
+
+        var response1 = new AirportDtos.AirportResponse(1L, "BOG", "El Dorado", "Bogota");
+        var response2 = new AirportDtos.AirportResponse(2L, "CLO", "Alfonso Bonilla Aragon", "Cali");
+        var response3 = new AirportDtos.AirportResponse(3L, "MIA", "Miami International", "Miami");
+
+        when(repo.findAll()).thenReturn(List.of(airport1, airport2, airport3));
+        when(airportMapper.toResponse(airport1)).thenReturn(response1);
+        when(airportMapper.toResponse(airport2)).thenReturn(response2);
+        when(airportMapper.toResponse(airport3)).thenReturn(response3);
 
         // ACT
         var airports = service.findAll();
@@ -154,11 +155,8 @@ class AirportServiceImplTest {
         assertThat(airports).isEmpty();
 
         verify(repo).findAll();
+        verifyNoInteractions(airportMapper);
     }
-
-    // ═══════════════════════════════════════════════════════════
-    // UPDATE AIRPORT
-    // ═══════════════════════════════════════════════════════════
 
     @Test
     void shouldUpdateAirportViaPatch() {
@@ -171,12 +169,20 @@ class AirportServiceImplTest {
                 .build();
 
         when(repo.findById(5L)).thenReturn(Optional.of(entity));
-        when(repo.save(any())).thenReturn(entity);
+        when(repo.save(entity)).thenReturn(entity);
 
-        var updateReq = new AirportDtos.AirportUpdateRequest(
-                "NEW",
-                "New Airport Name"
-        );
+        doAnswer(inv -> {
+            Airport a = inv.getArgument(1);
+            AirportDtos.AirportUpdateRequest req = inv.getArgument(0);
+            if (req.code() != null) a.setCode(req.code());
+            a.setName(req.name());
+            return null;
+        }).when(airportMapper).updateEntityFromRequest(any(), any());
+
+        var response = new AirportDtos.AirportResponse(5L, "NEW", "New Airport Name", "Old City");
+        when(airportMapper.toResponse(entity)).thenReturn(response);
+
+        var updateReq = new AirportDtos.AirportUpdateRequest("NEW", "New Airport Name");
 
         // ACT
         var updated = service.update(5L, updateReq);
@@ -184,9 +190,10 @@ class AirportServiceImplTest {
         // ASSERT
         assertThat(updated.code()).isEqualTo("NEW");
         assertThat(updated.name()).isEqualTo("New Airport Name");
-        assertThat(updated.city()).isEqualTo("New City");
+        assertThat(updated.city()).isEqualTo("Old City");
 
         verify(repo).findById(5L);
+        verify(airportMapper).updateEntityFromRequest(updateReq, entity);
         verify(repo).save(entity);
     }
 
@@ -201,12 +208,19 @@ class AirportServiceImplTest {
                 .build();
 
         when(repo.findById(7L)).thenReturn(Optional.of(entity));
-        when(repo.save(any())).thenReturn(entity);
+        when(repo.save(entity)).thenReturn(entity);
 
-        var updateReq = new AirportDtos.AirportUpdateRequest(
-                null,
-                "Simon Bolivar International"
-        );
+        doAnswer(inv -> {
+            Airport a = inv.getArgument(1);
+            AirportDtos.AirportUpdateRequest req = inv.getArgument(0);
+            if (req.name() != null) a.setName(req.name());
+            return null;
+        }).when(airportMapper).updateEntityFromRequest(any(), any());
+
+        var response = new AirportDtos.AirportResponse(7L, "SMR", "Simon Bolivar International", "Santa Marta");
+        when(airportMapper.toResponse(entity)).thenReturn(response);
+
+        var updateReq = new AirportDtos.AirportUpdateRequest(null, "Simon Bolivar International");
 
         // ACT
         var updated = service.update(7L, updateReq);
@@ -225,10 +239,7 @@ class AirportServiceImplTest {
         // ARRANGE
         when(repo.findById(999L)).thenReturn(Optional.empty());
 
-        var updateReq = new AirportDtos.AirportUpdateRequest(
-                "TEST",
-                "Test Airport"
-        );
+        var updateReq = new AirportDtos.AirportUpdateRequest("TEST", "Test Airport");
 
         // ACT & ASSERT
         assertThatThrownBy(() -> service.update(999L, updateReq))
@@ -238,10 +249,6 @@ class AirportServiceImplTest {
         verify(repo).findById(999L);
         verify(repo, never()).save(any());
     }
-
-    // ═══════════════════════════════════════════════════════════
-    // DELETE AIRPORT
-    // ═══════════════════════════════════════════════════════════
 
     @Test
     void shouldDeleteAirport() {

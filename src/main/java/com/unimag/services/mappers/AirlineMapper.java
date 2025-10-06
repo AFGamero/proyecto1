@@ -1,6 +1,8 @@
 package com.unimag.services.mappers;
 
-import com.unimag.api.dto.AirlineDtos.*;
+import com.unimag.api.dto.AirlineDtos.AirlineCreateRequest;
+import com.unimag.api.dto.AirlineDtos.AirlineResponse;
+import com.unimag.api.dto.AirlineDtos.AirlineUpdateRequest;
 import com.unimag.dominio.entidades.Airline;
 import org.mapstruct.*;
 
@@ -14,4 +16,9 @@ public interface AirlineMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromRequest(AirlineUpdateRequest request, @MappingTarget Airline airline);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "flights", ignore = true)
+    void patch(AirlineUpdateRequest request, @MappingTarget Airline entity);
 }

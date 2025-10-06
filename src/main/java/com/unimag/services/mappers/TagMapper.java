@@ -1,8 +1,10 @@
 package com.unimag.services.mappers;
 
-import com.unimag.api.dto.TagDtos.*;
+import com.unimag.api.dto.TagDtos.TagCreateRequest;
+import com.unimag.api.dto.TagDtos.TagResponse;
 import com.unimag.dominio.entidades.Tag;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 import java.util.Set;
@@ -13,4 +15,5 @@ public interface TagMapper {
     TagResponse toResponse(Tag tag);
     List<TagResponse> toResponseList(List<Tag> tags);
     Set<TagResponse> toResponseSet(Set<Tag> tags);
+
 }

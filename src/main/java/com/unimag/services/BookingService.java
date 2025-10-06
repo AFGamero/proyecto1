@@ -1,12 +1,9 @@
 package com.unimag.services;
 
-import com.unimag.api.dto.BookingDtos.*;
+import com.unimag.api.dto.BookingDtos.BookingCreateRequest;
+import com.unimag.api.dto.BookingDtos.BookingResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.util.List;
 
 public interface BookingService {
     BookingResponse createBooking(BookingCreateRequest request);

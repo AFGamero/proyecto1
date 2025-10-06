@@ -1,6 +1,8 @@
 package com.unimag.services.mappers;
 
-import com.unimag.api.dto.AirportDtos.*;
+import com.unimag.api.dto.AirportDtos.AirportCreateRequest;
+import com.unimag.api.dto.AirportDtos.AirportResponse;
+import com.unimag.api.dto.AirportDtos.AirportUpdateRequest;
 import com.unimag.dominio.entidades.Airport;
 import org.mapstruct.*;
 

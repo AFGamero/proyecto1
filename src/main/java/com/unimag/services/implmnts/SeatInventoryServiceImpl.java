@@ -1,7 +1,8 @@
 package com.unimag.services.implmnts;
 
-import com.unimag.api.dto.SeatInventoryDtos;
-import com.unimag.api.dto.SeatInventoryDtos.*;
+import com.unimag.api.dto.SeatInventoryDtos.SeatInventoryCreateRequest;
+import com.unimag.api.dto.SeatInventoryDtos.SeatInventoryResponse;
+import com.unimag.api.dto.SeatInventoryDtos.SeatInventoryUpdateRequest;
 import com.unimag.dominio.entidades.Cabin;
 import com.unimag.dominio.entidades.Flight;
 import com.unimag.dominio.entidades.SeatInventory;
@@ -10,6 +11,7 @@ import com.unimag.dominio.repositories.SeatInventoryRepository;
 import com.unimag.exception.NotFoundException;
 import com.unimag.services.SeatInventoryService;
 import com.unimag.services.mappers.SeatInventoryMapper;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +25,10 @@ import java.util.Optional;
 @Transactional
 public class SeatInventoryServiceImpl implements SeatInventoryService {
 
-    // ═══════════════════════════════════════════════════════════
-    // INYECCIÓN DE DEPENDENCIAS
-    // ═══════════════════════════════════════════════════════════
     private final SeatInventoryRepository repo;
     private final FlightRepository flightRepo;
+    private final SeatInventoryMapper seatInventoryMapper;
 
-    // ═══════════════════════════════════════════════════════════
-    // CREAR SEAT INVENTORY
-    // ═══════════════════════════════════════════════════════════
     @Override
     public SeatInventoryResponse create(Long flightId, SeatInventoryCreateRequest request) {
         // 1. Validar que el vuelo existe
@@ -39,8 +36,6 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
                 .orElseThrow(() -> new NotFoundException(
                         "Flight %d not found".formatted(flightId)
                 ));
-
-
         Cabin cabin = Cabin.valueOf(request.cabin().toUpperCase());
         if (repo.findByFlightIdAndCabin(flightId, cabin).isPresent()) {
             throw new IllegalStateException(
@@ -50,28 +45,22 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
         }
 
 
-        SeatInventory seatInventory = SeatInventoryMapper.toEntity(request);
+        SeatInventory seatInventory = seatInventoryMapper.toEntity(request);
         seatInventory.setFlight(flight);
 
-        return SeatInventoryMapper.toResponse(repo.save(seatInventory));
+        return seatInventoryMapper.toResponse(repo.save(seatInventory));
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // BUSCAR POR ID
-    // ═══════════════════════════════════════════════════════════
     @Override
     @Transactional(readOnly = true)
     public SeatInventoryResponse findById(Long id) {
         return repo.findById(id)
-                .map(SeatInventoryMapper::toResponse)
+                .map(seatInventoryMapper::toResponse)
                 .orElseThrow(() -> new NotFoundException(
                         "SeatInventory %d not found".formatted(id)
                 ));
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // BUSCAR POR VUELO Y CABINA (ÚNICO - gracias a UK)
-    // ═══════════════════════════════════════════════════════════
     @Override
     @Transactional(readOnly = true)
     public SeatInventoryResponse findByFlightAndCabin(Long flightId, String cabin) {
@@ -83,16 +72,13 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
         Cabin cabinEnum = Cabin.valueOf(cabin.toUpperCase());
 
         return repo.findByFlightIdAndCabin(flightId, cabinEnum)
-                .map(SeatInventoryMapper::toResponse)
+                .map(seatInventoryMapper::toResponse)
                 .orElseThrow(() -> new NotFoundException(
                         "SeatInventory for flight %d and cabin %s not found"
                                 .formatted(flightId, cabin)
                 ));
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // LISTAR POR VUELO (TODAS LAS CABINAS)
-    // ═══════════════════════════════════════════════════════════
     @Override
     @Transactional(readOnly = true)
     public List<SeatInventoryResponse> findByFlightId(Long flightId) {
@@ -105,13 +91,10 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
                 .map(cabin -> repo.findByFlightIdAndCabin(flightId, cabin))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(SeatInventoryMapper::toResponse)
+                .map(seatInventoryMapper::toResponse)
                 .toList();
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // ACTUALIZAR SEAT INVENTORY
-    // ═══════════════════════════════════════════════════════════
     @Override
     public SeatInventoryResponse update(Long id, SeatInventoryUpdateRequest request) {
 
@@ -120,6 +103,20 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
                         "SeatInventory %d not found".formatted(id)
                 ));
 
+        Integer newAvailable = getInteger(request, seatInventory);
+
+        if (newAvailable < 0) {
+            throw new IllegalArgumentException(
+                    "Available seats cannot be negative"
+            );
+        }
+
+        seatInventoryMapper.patch(request, seatInventory);
+
+        return seatInventoryMapper.toResponse(seatInventory);
+    }
+
+    private static Integer getInteger(SeatInventoryUpdateRequest request, SeatInventory seatInventory) {
         Integer newTotal = request.totalSeats() != null
                 ? request.totalSeats()
                 : seatInventory.getTotalSeats();
@@ -134,16 +131,7 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
                             .formatted(newAvailable, newTotal)
             );
         }
-
-        if (newAvailable < 0) {
-            throw new IllegalArgumentException(
-                    "Available seats cannot be negative"
-            );
-        }
-
-        SeatInventoryMapper.patch(seatInventory, request);
-
-        return SeatInventoryMapper.toResponse(seatInventory);
+        return newAvailable;
     }
 
     @Override
@@ -172,7 +160,6 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
 
     @Override
     public SeatInventoryResponse reserveSeats(Long flightId, String cabin, Integer seats) {
-        // 1. Validar parámetros
         if (seats == null || seats <= 0) {
             throw new IllegalArgumentException("Seats must be positive");
         }
@@ -190,16 +177,14 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
             );
         }
 
-        // 4. Reducir asientos disponibles
         inventory.setAvailableSeats(inventory.getAvailableSeats() - seats);
 
-        // 5. Retornar (dirty checking persiste el cambio)
-        return SeatInventoryMapper.toResponse(inventory);
+        return seatInventoryMapper.toResponse(inventory);
     }
 
     @Override
-    public SeatInventoryResponse releaseSeats(Long flightId, String cabin, Integer seats) {
-        if (seats == null || seats <= 0) {
+    public SeatInventoryResponse releaseSeats(@NonNull Long flightId, @NonNull String cabin, @NonNull Integer seats) {
+        if (seats <= 0) {
             throw new IllegalArgumentException("Seats must be positive");
         }
 
@@ -214,15 +199,13 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
 
         if (newAvailable > inventory.getTotalSeats()) {
             throw new IllegalStateException(
-                    "Cannot release %d seats. Would exceed total seats. " +
-                            "Current available: %d, Total: %d"
-                                    .formatted(seats, inventory.getAvailableSeats(),
-                                            inventory.getTotalSeats())
+                    "Cannot release %d seats. Would exceed total seats. " + "Current available: %d, Total: %d"
+                            .formatted(seats, inventory.getAvailableSeats(), inventory.getTotalSeats())
             );
         }
 
         inventory.setAvailableSeats(newAvailable);
 
-        return SeatInventoryMapper.toResponse(inventory);
+        return seatInventoryMapper.toResponse(inventory);
     }
 }

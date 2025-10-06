@@ -9,9 +9,10 @@ import com.unimag.dominio.repositories.AirlineRepository;
 import com.unimag.dominio.repositories.AirportRepository;
 import com.unimag.dominio.repositories.FlightRepository;
 import com.unimag.dominio.repositories.TagRepository;
+import com.unimag.exception.NotFoundException;
 import com.unimag.services.FlightService;
 import com.unimag.services.mappers.FlightMapper;
-import lombok.NoArgsConstructor;
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class FlightServiceImpl implements FlightService {
     private final AirlineRepository airlineRepository;
     private final AirportRepository airportRepository;
     private final TagRepository tagRepository;
+    private final FlightMapper flightMapper;
     @Override
     public FlightDtos.FlightResponse create(Long airlineId, Long originId, Long destinationId, FlightDtos.FlightCreateRequest request) {
         Airline airline = airlineRepository.findById(airlineId)
@@ -37,33 +39,33 @@ public class FlightServiceImpl implements FlightService {
         Airport origin = airportRepository.findById(originId)
                 .orElseThrow(() -> new RuntimeException("Origin Airport with id " + originId + " not found"));
 
-        Flight flight = FlightMapper.ToEntity(request);
+        Flight flight = flightMapper.toEntity(request);
         flight.setAirline(airline);
         flight.setOrigin(origin);
         flight.setDestination(destination);
 
-        return FlightMapper.toResponse(flightRepository.save(flight));
+        return flightMapper.toResponse(flightRepository.save(flight));
 
     }
 
     @Override
     public FlightDtos.FlightResponse findById(Long id) {
 
-        return flightRepository.findById(id).map(FlightMapper::toResponse)
+        return flightRepository.findById(id).map(flightMapper::toResponse)
                 .orElseThrow(() -> new RuntimeException("Flight with id " + id + " not found"));
     }
 
     @Override
     public List<FlightDtos.FlightResponse> findAll() {
-        return flightRepository.findAll().stream().map(FlightMapper::toResponse).toList();
+        return flightRepository.findAll().stream().map(flightMapper::toResponse).toList();
     }
 
     @Override
     public FlightDtos.FlightResponse update(Long id, FlightDtos.FlightUpdateRequest request) {
             Flight flight = flightRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Flight with id " + id + " not found"));
-            FlightMapper.patch(flight,request);
-            return FlightMapper.toResponse(flightRepository.save(flight));
+            flightMapper.patch(request, flight);
+            return flightMapper.toResponse(flightRepository.save(flight));
     }
 
     @Override
@@ -73,12 +75,19 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightDtos.FlightResponse addTag(Long flightId, Long tagId) {
-        return null;
+    public FlightDtos.FlightResponse addTag(@Nonnull Long flightId, @Nonnull Long tagId) {
+        var flight = flightRepository.findById(flightId).orElseThrow(()-> new NotFoundException("Flight with id " + flightId + " not found"));
+        var tag = tagRepository.findById(tagId).orElseThrow(() -> new NotFoundException("Tag with id " + tagId + " not found"));
+        flight.addTag(tag);
+        return flightMapper.toResponse(flight);
     }
 
     @Override
     public FlightDtos.FlightResponse removeTag(Long flightId, Long tagId) {
-        return null;
+        var flight = flightRepository.findById(flightId).orElseThrow(()-> new NotFoundException("Flight with id " + flightId + " not found"));
+        var tag = tagRepository.findById(tagId).orElseThrow(() -> new NotFoundException("Tag with id " + tagId + " not found"));
+        flight.getTags().remove(tag);
+        tag.getFlights().remove(flight);
+        return flightMapper.toResponse(flight);
     }
 }

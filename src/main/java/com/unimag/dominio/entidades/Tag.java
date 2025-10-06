@@ -24,8 +24,13 @@ public class Tag {
     @Column(nullable = false)
     private String name;
 
+
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     @Builder.Default
+    //
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    //Lo de arriba es pa evitar StackOverFlow
     private Set<Flight> flights = new HashSet<>();
 
 }

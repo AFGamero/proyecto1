@@ -8,6 +8,7 @@ import com.unimag.dominio.repositories.FlightRepository;
 import com.unimag.dominio.repositories.SeatInventoryRepository;
 import com.unimag.exception.NotFoundException;
 import com.unimag.services.implmnts.SeatInventoryServiceImpl;
+import com.unimag.services.mappers.SeatInventoryMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +25,9 @@ class SeatInventoryServiceImplTest {
 
     @Mock
     SeatInventoryRepository repo;
+
+    @Mock
+    SeatInventoryMapper seatInventoryMapper;
 
     @Mock
     FlightRepository flightRepo;
@@ -170,9 +174,9 @@ class SeatInventoryServiceImplTest {
         when(flightRepo.existsById(10L)).thenReturn(true);
         when(repo.findByFlightIdAndCabin(10L, Cabin.BUSINESS)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> service.findByFlightAndCabin(10L, "FIRST_CLASS"))
+        assertThatThrownBy(() -> service.findByFlightAndCabin(10L, "BUSINESS"))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("SeatInventory for flight 10 and cabin FIRST_CLASS not found");
+                .hasMessageContaining("SeatInventory for flight 10 and cabin BUSINESS not found");
 
         verify(repo).findByFlightIdAndCabin(10L, Cabin.BUSINESS);
     }
@@ -335,8 +339,9 @@ class SeatInventoryServiceImplTest {
                 .build();
 
         when(repo.findByFlightIdAndCabin(30L, Cabin.ECONOMY)).thenReturn(Optional.of(seatInventory));
-
         var response = service.reserveSeats(30L, "ECONOMY", 20);
+
+
 
         assertThat(response.availableSeats()).isEqualTo(130);
         assertThat(seatInventory.getAvailableSeats()).isEqualTo(130);
