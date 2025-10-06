@@ -48,6 +48,10 @@ public class Flight {
             joinColumns = @JoinColumn(name = "flight_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @Builder.Default
+    //
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    //Lo de arriba es pa evitar StackOverFlow
     private Set<Tag> tags = new HashSet<>();
 
     public void addTag(Tag tag) {
