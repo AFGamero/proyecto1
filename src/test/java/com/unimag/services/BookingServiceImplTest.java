@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -26,8 +27,10 @@ class BookingServiceImplTest {
 
     @Mock
     BookingRepository bookingRepository;
+
     @Mock
     BookingMapper bookingMapper;
+
     @Mock
     PassengerRepository passengerRepository;
 
@@ -43,12 +46,25 @@ class BookingServiceImplTest {
                 .email("juan@mail.com")
                 .build();
 
+        var now = OffsetDateTime.now();
+
         when(passengerRepository.findById(10L)).thenReturn(Optional.of(passenger));
-        when(bookingRepository.save(any())).thenAnswer(inv -> {
+
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(inv -> {
             Booking b = inv.getArgument(0);
             b.setId(100L);
             return b;
         });
+
+        var expectedResponse = new BookingResponse(
+                100L,
+                now,
+                "Juan Perez",
+                "juan@mail.com",
+                List.of()
+        );
+
+        when(bookingMapper.toResponse(any(Booking.class))).thenReturn(expectedResponse);
 
         var request = new BookingCreateRequest(10L);
 
@@ -65,6 +81,7 @@ class BookingServiceImplTest {
 
         verify(passengerRepository).findById(10L);
         verify(bookingRepository).save(any(Booking.class));
+        verify(bookingMapper).toResponse(any(Booking.class));
     }
 
     @Test
@@ -99,7 +116,16 @@ class BookingServiceImplTest {
                 .items(new ArrayList<>())
                 .build();
 
+        var expectedResponse = new BookingResponse(
+                50L,
+                booking.getCreatedAt(),
+                "Maria Lopez",
+                "maria@mail.com",
+                List.of()
+        );
+
         when(bookingRepository.findById(50L)).thenReturn(Optional.of(booking));
+        when(bookingMapper.toResponse(booking)).thenReturn(expectedResponse);
 
         // ACT
         var response = service.getBooking(50L);
@@ -110,6 +136,7 @@ class BookingServiceImplTest {
         assertThat(response.passenger_email()).isEqualTo("maria@mail.com");
 
         verify(bookingRepository).findById(50L);
+        verify(bookingMapper).toResponse(booking);
     }
 
     @Test
@@ -149,7 +176,16 @@ class BookingServiceImplTest {
 
         when(bookingRepository.findById(30L)).thenReturn(Optional.of(booking));
         when(passengerRepository.findById(2L)).thenReturn(Optional.of(newPassenger));
-        when(bookingRepository.save(any())).thenReturn(booking);
+        when(bookingRepository.save(booking)).thenReturn(booking);
+
+        var expectedResponse = new BookingResponse(
+                30L,
+                booking.getCreatedAt(),
+                "New Passenger",
+                "new@mail.com",
+                List.of()
+        );
+        when(bookingMapper.toResponse(booking)).thenReturn(expectedResponse);
 
         // ACT
         var response = service.updateBooking(30L, 2L);
@@ -161,6 +197,7 @@ class BookingServiceImplTest {
         verify(bookingRepository).findById(30L);
         verify(passengerRepository).findById(2L);
         verify(bookingRepository).save(booking);
+        verify(bookingMapper).toResponse(booking);
     }
 
     @Test
@@ -198,13 +235,9 @@ class BookingServiceImplTest {
         verify(bookingRepository, never()).save(any());
     }
 
-
     @Test
     void shouldDeleteBooking() {
-
         service.deleteBooking(100L);
-
-
         verify(bookingRepository).deleteById(100L);
     }
 }

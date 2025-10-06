@@ -40,7 +40,6 @@ class PassengerServiceImplTest {
         var profileDto = new PassengerProfileDto("3220232002", "57");
         var request = new PassengerCreateRequest("Juan Perez", "juan@mail.com", profileDto);
 
-        // Entidad que se va a crear
         var passengerToSave = Passenger.builder()
                 .fullName("Juan Perez")
                 .email("juan@mail.com")
@@ -50,7 +49,6 @@ class PassengerServiceImplTest {
                         .build())
                 .build();
 
-        // Entidad guardada con ID
         var savedPassenger = Passenger.builder()
                 .id(10L)
                 .fullName("Juan Perez")
@@ -61,7 +59,6 @@ class PassengerServiceImplTest {
                         .build())
                 .build();
 
-        // Response esperado
         var expectedResponse = new PassengerResponse(
                 10L,
                 "Juan Perez",
@@ -69,13 +66,8 @@ class PassengerServiceImplTest {
                 new PassengerProfileDto("3220232002", "57")
         );
 
-        // Mock: Mapper convierte request a entidad
         when(passengerMapper.toEntity(request)).thenReturn(passengerToSave);
-
-        // Mock: Repository guarda y retorna con ID
         when(passengerRepository.save(passengerToSave)).thenReturn(savedPassenger);
-
-        // Mock: Mapper convierte entidad a response
         when(passengerMapper.toResponse(savedPassenger)).thenReturn(expectedResponse);
 
         // ACT
@@ -112,10 +104,8 @@ class PassengerServiceImplTest {
                 new PassengerProfileDto(null, "57")
         );
 
-        // Mock: Buscar pasajero existente
         when(passengerRepository.findById(3L)).thenReturn(Optional.of(entity));
 
-        // Mock: Patch modifica la entidad
         doAnswer(inv -> {
             PassengerUpdateRequest req = inv.getArgument(0);
             Passenger pass = inv.getArgument(1);
@@ -127,10 +117,8 @@ class PassengerServiceImplTest {
             return null;
         }).when(passengerMapper).patch(any(), any());
 
-        // Mock: Repository guarda la entidad modificada (IMPORTANTE!)
         when(passengerRepository.save(entity)).thenReturn(entity);
 
-        // Mock: Mapper convierte entidad guardada a response
         var expectedResponse = new PassengerResponse(
                 3L,
                 "New Name",
@@ -173,10 +161,8 @@ class PassengerServiceImplTest {
 
         var passengersPage = new PageImpl<>(List.of(passenger1, passenger2));
 
-        // Mock: Repository retorna página de pasajeros
         when(passengerRepository.findAll(Pageable.unpaged())).thenReturn(passengersPage);
 
-        // Mock: Mapper convierte cada pasajero a response
         var response1 = new PassengerResponse(1L, "Ana", "ana@mail.com",
                 new PassengerProfileDto(null, null));
         var response2 = new PassengerResponse(2L, "Bob", "bob@mail.com",
@@ -211,11 +197,9 @@ class PassengerServiceImplTest {
                         .build())
                 .build();
 
-        // Mock: Repository encuentra el pasajero por email
         when(passengerRepository.findByEmailIgnoreCase("carlos@mail.com"))
                 .thenReturn(Optional.of(entity));
 
-        // Mock: Mapper convierte a response
         var expectedResponse = new PassengerResponse(
                 7L,
                 "Carlos",
