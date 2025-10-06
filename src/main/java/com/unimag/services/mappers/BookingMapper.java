@@ -8,16 +8,13 @@ import com.unimag.dominio.entidades.Booking;
 import com.unimag.dominio.entidades.BookingItem;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+
+@Mapper(componentModel = "spring")
 public interface BookingMapper {
-
-    @Mapping(target = "passenger", ignore = true)
-    @Mapping(target = "items", ignore = true)
-    Booking toEntity(BookingCreateRequest request);
-
-    @Mapping(target = "passenger_name", expression = "java(booking.getPassenger() != null ? booking.getPassenger().getFullName() : null)")
-    @Mapping(target = "passenger_email", expression = "java(booking.getPassenger() != null ? booking.getPassenger().getEmail() : null)")
-    @Mapping(target = "items", expression = "java(mapBookingItems(booking.getItems()))")
+    // Booking
+    @Mapping(source = "passenger.fullName", target = "passenger_name")
+    @Mapping(source = "passenger.email", target = "passenger_email")
+    @Mapping(source = "items", target = "items")
     BookingResponse toResponse(Booking booking);
 
     //Booking Item
@@ -36,4 +33,5 @@ public interface BookingMapper {
     @Mapping(target = "booking", ignore = true)
     @Mapping(target = "flight", ignore = true)
     void patch(BookingDtos.BookingItemUpdateRequest request, @MappingTarget BookingItem item);
+
 }

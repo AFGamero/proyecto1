@@ -4,6 +4,7 @@ import com.unimag.api.dto.FlightDtos.*;
 import com.unimag.dominio.entidades.*;
 import com.unimag.dominio.repositories.*;
 import com.unimag.services.implmnts.FlightServiceImpl;
+import com.unimag.services.mappers.FlightMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +26,8 @@ class FlightServiceImplTest {
     @Mock AirlineRepository airlineRepo;
     @Mock AirportRepository airportRepo;
     @Mock TagRepository tagRepo;
-
+    @Mock
+    FlightMapper flightMapper;
     @InjectMocks
     FlightServiceImpl service;
 

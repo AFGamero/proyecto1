@@ -7,6 +7,7 @@ import com.unimag.dominio.repositories.BookingRepository;
 import com.unimag.dominio.repositories.PassengerRepository;
 import com.unimag.exception.NotFoundException;
 import com.unimag.services.implmnts.BookingServiceImpl;
+import com.unimag.services.mappers.BookingMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,16 +26,13 @@ class BookingServiceImplTest {
 
     @Mock
     BookingRepository bookingRepository;
-
+    @Mock
+    BookingMapper bookingMapper;
     @Mock
     PassengerRepository passengerRepository;
 
     @InjectMocks
     BookingServiceImpl service;
-
-    // ═══════════════════════════════════════════════════════════
-    // CREATE BOOKING
-    // ═══════════════════════════════════════════════════════════
 
     @Test
     void shouldCreateBookingAndMapToResponse() {
@@ -85,10 +83,6 @@ class BookingServiceImplTest {
         verify(bookingRepository, never()).save(any());
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // GET BOOKING
-    // ═══════════════════════════════════════════════════════════
-
     @Test
     void shouldGetBookingById() {
         // ARRANGE
@@ -130,10 +124,6 @@ class BookingServiceImplTest {
 
         verify(bookingRepository).findById(999L);
     }
-
-    // ═══════════════════════════════════════════════════════════
-    // UPDATE BOOKING
-    // ═══════════════════════════════════════════════════════════
 
     @Test
     void shouldUpdateBookingPassenger() {
