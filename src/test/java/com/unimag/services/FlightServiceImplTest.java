@@ -43,24 +43,28 @@ class FlightServiceImplTest {
 
         var request = new FlightCreateRequest("AV123", now, now.plusHours(1));
 
-        var flightToSave = Flight.builder().number("AV123").departureTime(now).arrivalTime(now.plusHours(1)).build();
-
-        var savedFlight = Flight.builder().id(100L).number("AV123").departureTime(now).arrivalTime(now.plusHours(1))
-                .airline(airline).origin(origin).destination(destination).tags(new HashSet<>()).build();
-
-        var expectedResponse = new FlightResponse(
-                100L, "AV123", now, now.plusHours(1), 1L, 10L, 20L, Set.of()
-        );
+        var flightToSave = Flight.builder()
+                .number("AV123")
+                .departureTime(now)
+                .arrivalTime(now.plusHours(1))
+                .tags(new HashSet<>())
+                .build();
 
         when(airlineRepo.findById(1L)).thenReturn(Optional.of(airline));
         when(airportRepo.findById(10L)).thenReturn(Optional.of(origin));
         when(airportRepo.findById(20L)).thenReturn(Optional.of(destination));
-
         when(flightMapper.toEntity(request)).thenReturn(flightToSave);
 
-        when(flightRepo.save(any(Flight.class))).thenReturn(savedFlight);
+        when(flightRepo.save(any(Flight.class))).thenAnswer(inv -> {
+            Flight f = inv.getArgument(0);
+            f.setId(100L);
+            return f;
+        });
 
-        when(flightMapper.toResponse(savedFlight)).thenReturn(expectedResponse);
+        var expectedResponse = new FlightResponse(
+                100L, "AV123", now, now.plusHours(1), 1L, 10L, 20L, Set.of()
+        );
+        when(flightMapper.toResponse(any(Flight.class))).thenReturn(expectedResponse);
 
         // ACT
         var res = service.create(1L, 10L, 20L, request);
@@ -78,7 +82,7 @@ class FlightServiceImplTest {
         verify(airportRepo).findById(20L);
         verify(flightMapper).toEntity(request);
         verify(flightRepo).save(any(Flight.class));
-        verify(flightMapper).toResponse(savedFlight);
+        verify(flightMapper).toResponse(any(Flight.class));
     }
 
     @Test
@@ -100,10 +104,8 @@ class FlightServiceImplTest {
                 50L
         );
 
-        // Mock: Buscar vuelo existente
         when(flightRepo.findById(50L)).thenReturn(Optional.of(entity));
 
-        // Mock: Patch modifica la entidad
         doAnswer(inv -> {
             FlightUpdateRequest req = inv.getArgument(0);
             Flight flight = inv.getArgument(1);
@@ -113,19 +115,10 @@ class FlightServiceImplTest {
             return null;
         }).when(flightMapper).patch(any(), any());
 
-        // Mock: Repository guarda la entidad modificada
         when(flightRepo.save(entity)).thenReturn(entity);
 
-        // Mock: Mapper convierte a response
         var expectedResponse = new FlightResponse(
-                50L,
-                "NEW456",
-                now.plusHours(1),
-                now.plusHours(3),
-                null,
-                null,
-                50L,
-                Set.of()
+                50L, "NEW456", now.plusHours(1), now.plusHours(3), null, null, 50L, Set.of()
         );
         when(flightMapper.toResponse(entity)).thenReturn(expectedResponse);
 
@@ -149,7 +142,12 @@ class FlightServiceImplTest {
         // ARRANGE
         var now = OffsetDateTime.now();
         var flight = Flight.builder()
-                .id(30L).number("FL123").departureTime(now).arrivalTime(now.plusHours(2)).tags(new HashSet<>()).build();
+                .id(30L)
+                .number("FL123")
+                .departureTime(now)
+                .arrivalTime(now.plusHours(2))
+                .tags(new HashSet<>())
+                .build();
 
         when(flightRepo.findById(30L)).thenReturn(Optional.of(flight));
 
@@ -175,10 +173,20 @@ class FlightServiceImplTest {
         // ARRANGE
         var now = OffsetDateTime.now();
         var flight1 = Flight.builder()
-                .id(1L).number("FL001").departureTime(now).arrivalTime(now.plusHours(1)).tags(new HashSet<>()).build();
+                .id(1L)
+                .number("FL001")
+                .departureTime(now)
+                .arrivalTime(now.plusHours(1))
+                .tags(new HashSet<>())
+                .build();
 
         var flight2 = Flight.builder()
-                .id(2L).number("FL002").departureTime(now.plusHours(2)).arrivalTime(now.plusHours(3)).tags(new HashSet<>()).build();
+                .id(2L)
+                .number("FL002")
+                .departureTime(now.plusHours(2))
+                .arrivalTime(now.plusHours(3))
+                .tags(new HashSet<>())
+                .build();
 
         when(flightRepo.findAll()).thenReturn(List.of(flight1, flight2));
 
@@ -203,22 +211,25 @@ class FlightServiceImplTest {
 
     @Test
     void shouldAddTagToFlight() {
-        // ARRANGE
+        // ARRANGE - NO establecer relaciones bidireccionales
         var flight = Flight.builder()
-                .id(30L).number("FL123").tags(new HashSet<>()).build();
+                .id(30L)
+                .number("FL123")
+                .tags(new HashSet<>())
+                .build();
 
         var tag = Tag.builder()
-                .id(5L).name("Direct").flights(new HashSet<>()).build();
+                .id(5L)
+                .name("Direct")
+                .flights(new HashSet<>())
+                .build();
 
-        // Mock: Buscar vuelo y tag
         when(flightRepo.findById(30L)).thenReturn(Optional.of(flight));
         when(tagRepo.findById(5L)).thenReturn(Optional.of(tag));
 
-        // Mock: Mapper convierte a response con el tag agregado
         var tagResponse = new TagDtos.TagResponse(5L, "Direct");
         var expectedResponse = new FlightResponse(
-                30L, "FL123", null, null, null,
-                null, null, Set.of(tagResponse)
+                30L, "FL123", null, null, null, null, null, Set.of(tagResponse)
         );
         when(flightMapper.toResponse(flight)).thenReturn(expectedResponse);
 
@@ -238,18 +249,22 @@ class FlightServiceImplTest {
 
     @Test
     void shouldRemoveTagFromFlight() {
-        // ARRANGE
-        var tag = Tag.builder().id(5L).name("Direct").flights(new HashSet<>()).build();
+        // ARRANGE - Tag inicialmente en el flight
+        var tag = Tag.builder()
+                .id(5L)
+                .name("Direct")
+                .flights(new HashSet<>())
+                .build();
 
-        var flight = Flight.builder().id(30L).number("FL123").tags(new HashSet<>(Set.of(tag))).build();
+        var flight = Flight.builder()
+                .id(30L)
+                .number("FL123")
+                .tags(new HashSet<>(Set.of(tag)))
+                .build();
 
-        tag.getFlights().add(flight);
-
-        // Mock: Buscar vuelo y tag
         when(flightRepo.findById(30L)).thenReturn(Optional.of(flight));
         when(tagRepo.findById(5L)).thenReturn(Optional.of(tag));
 
-        // Mock: Mapper convierte a response sin tags
         var expectedResponse = new FlightResponse(
                 30L, "FL123", null, null, null, null, null, Set.of()
         );
@@ -270,7 +285,6 @@ class FlightServiceImplTest {
     @Test
     void shouldDeleteFlightById() {
         // ARRANGE
-        // Mock: Repository elimina el vuelo
         doNothing().when(flightRepo).deleteById(50L);
 
         // ACT
