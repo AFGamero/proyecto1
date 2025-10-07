@@ -5,38 +5,36 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Data
-@Setter
-@Getter
-@Table(name = "booking_items")
 @Entity
+@Table(name = "booking_items")
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@ToString(exclude = "booking") // 🔥 evita recursión con Booking
+@EqualsAndHashCode(exclude = "booking")
 public class BookingItem {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "booking_item_id")
     private Long id;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Cabin cabin;
 
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(nullable = false, name = "segment_order")
+    @Column(name = "segment_order", nullable = false)
     private Integer segmentOrder;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id")
     private Booking booking;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "flight_id")
     private Flight flight;
-
-
-
 }

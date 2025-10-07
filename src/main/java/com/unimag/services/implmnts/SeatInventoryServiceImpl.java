@@ -94,10 +94,8 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
                 .map(seatInventoryMapper::toResponse)
                 .toList();
     }
-
     @Override
     public SeatInventoryResponse update(Long id, SeatInventoryUpdateRequest request) {
-
         SeatInventory seatInventory = repo.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         "SeatInventory %d not found".formatted(id)
@@ -113,8 +111,12 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
 
         seatInventoryMapper.patch(request, seatInventory);
 
-        return seatInventoryMapper.toResponse(seatInventory);
+        // 💾 Guardar los cambios en la BD
+        SeatInventory updated = repo.save(seatInventory);
+
+        return seatInventoryMapper.toResponse(updated);
     }
+
 
     private static Integer getInteger(SeatInventoryUpdateRequest request, SeatInventory seatInventory) {
         Integer newTotal = request.totalSeats() != null
@@ -125,12 +127,26 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
                 ? request.availableSeats()
                 : seatInventory.getAvailableSeats();
 
+        // 🧩 Validación 1: total seats no puede ser negativo
+        if (newTotal < 0) {
+            throw new IllegalArgumentException("Total seats cannot be negative");
+        }
+
+        // 🧩 Validación 2: available seats no puede ser negativo
+        if (newAvailable < 0) {
+            throw new IllegalArgumentException("Available seats cannot be negative");
+        }
+
+        // 🧩 Validación 3: available no puede superar total
         if (newAvailable > newTotal) {
             throw new IllegalArgumentException(
-                    "Available seats (%d) cannot exceed total seats (%d)"
-                            .formatted(newAvailable, newTotal)
+                    String.format(
+                            "Available seats (%d) cannot exceed total seats (%d)",
+                            newAvailable, newTotal
+                    )
             );
         }
+
         return newAvailable;
     }
 
@@ -196,15 +212,17 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
                 ));
 
         int newAvailable = inventory.getAvailableSeats() + seats;
-
         if (newAvailable > inventory.getTotalSeats()) {
             throw new IllegalStateException(
-                    "Cannot release %d seats. Would exceed total seats. " + "Current available: %d, Total: %d"
-                            .formatted(seats, inventory.getAvailableSeats(), inventory.getTotalSeats())
+                    String.format(
+                            "Cannot release %d seats. Would exceed total seats. Current available: %d, Total: %d",
+                            seats, inventory.getAvailableSeats(), inventory.getTotalSeats()
+                    )
             );
         }
 
         inventory.setAvailableSeats(newAvailable);
+        repo.save(inventory);
 
         return seatInventoryMapper.toResponse(inventory);
     }

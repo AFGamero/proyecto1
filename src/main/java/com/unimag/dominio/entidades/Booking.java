@@ -7,18 +7,18 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "bookings")
 @Data
 @Builder
-@Setter
-@Getter
-@Table(name = "bookings")
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-
+@ToString(exclude = "items") // 🔥 evita bucles infinitos en toString()
+@EqualsAndHashCode(exclude = "items")
 public class Booking {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "booking_id")
     private Long id;
 
@@ -29,12 +29,27 @@ public class Booking {
     @JoinColumn(name = "passenger_id")
     private Passenger passenger;
 
-    @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
-    private List<BookingItem> items;
+    @OneToMany(
+            mappedBy = "booking",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default // ✅ mantiene inicialización al usar builder()
+    private List<BookingItem> items = new ArrayList<>();
 
     public void addItem(BookingItem bookingItem) {
+        if (bookingItem == null) {
+            throw new IllegalArgumentException("Booking item cannot be null");
+        }
         items.add(bookingItem);
         bookingItem.setBooking(this);
     }
 
+    public void removeItem(BookingItem bookingItem) {
+        if (bookingItem != null) {
+            items.remove(bookingItem);
+            bookingItem.setBooking(null);
+        }
+    }
 }
