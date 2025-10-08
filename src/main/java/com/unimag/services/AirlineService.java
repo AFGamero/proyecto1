@@ -13,4 +13,3 @@ public interface AirlineService {
     AirlineResponse update(Long id, AirlineUpdateRequest request);
     void deleteById(Long id);
 }
-

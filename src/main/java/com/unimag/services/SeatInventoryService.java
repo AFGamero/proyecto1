@@ -13,7 +13,4 @@ public interface SeatInventoryService {
     List<SeatInventoryResponse> findByFlightId(Long flightId);
     SeatInventoryResponse update(Long id, SeatInventoryUpdateRequest request);
     void deleteById(Long id);
-    boolean checkAvailability(Long flightId, String cabin, Integer minSeats);
-    SeatInventoryResponse reserveSeats(Long flightId, String cabin, Integer seats);
-    SeatInventoryResponse releaseSeats(Long flightId, String cabin, Integer seats);
 }

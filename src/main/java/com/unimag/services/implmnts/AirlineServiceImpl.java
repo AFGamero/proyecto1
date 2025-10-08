@@ -36,12 +36,12 @@ public class AirlineServiceImpl implements AirlineService {
         return repo.findAll().stream().map(airlineMapper::toResponse).toList();
     }
 
-        @Override
-        public AirlineDtos.AirlineResponse update(Long id, AirlineDtos.AirlineUpdateRequest request) {
-            Airline airline = repo.findById(id).orElseThrow(() -> new NotFoundException("Airline with id " + id + " not found"));
-            airlineMapper.patch(request, airline);
-            return airlineMapper.toResponse(airline);
-        }
+    @Override
+    public AirlineDtos.AirlineResponse update(Long id, AirlineDtos.AirlineUpdateRequest request) {
+        Airline airline = repo.findById(id).orElseThrow(() -> new NotFoundException("Airline with id " + id + " not found"));
+        airlineMapper.patch(request, airline);
+        return airlineMapper.toResponse(airline);
+    }
 
     @Override
     public void deleteById(Long id) {

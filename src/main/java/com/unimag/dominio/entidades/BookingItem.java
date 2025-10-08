@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "booking") // 🔥 evita recursión con Booking
+@ToString(exclude = "booking")
 @EqualsAndHashCode(exclude = "booking")
 public class BookingItem {
 
