@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,8 +68,8 @@ class BookingItemServiceImplTest {
                 "ECONOMY",
                 new BigDecimal("150.00"),
                 10,
-                20l,
-                50l,
+                20L,
+                50L,
                 "AV123"
         );
 
@@ -205,8 +204,8 @@ class BookingItemServiceImplTest {
                 .segmentOrder(2)
                 .build();
 
-        var response1 = new BookingItemResponse(201L, "ECONOMY", new BigDecimal("100.00"), 32, 1l,23l, "FL001");
-        var response2 = new BookingItemResponse(202L, "BUSINESS", new BigDecimal("300.00"), 22, 2l,24l, "FL002");
+        var response1 = new BookingItemResponse(201L, "ECONOMY", new BigDecimal("100.00"), 32, 1L,23L, "FL001");
+        var response2 = new BookingItemResponse(202L, "BUSINESS", new BigDecimal("300.00"), 22, 2L,24L, "FL002");
 
         when(bookingRepository.findById(20L)).thenReturn(Optional.of(booking));
         when(bookingItemRepository.findByBookingIdOrderBySegmentOrder(20L)).thenReturn(List.of(item1, item2));
@@ -302,8 +301,8 @@ class BookingItemServiceImplTest {
                 "BUSINESS",
                 new BigDecimal("350.00"),
                 234,
-                20l,
-                30l,
+                20L,
+                30L,
                 "NEW456"
         );
         when(bookingMapper.toItemResponse(bookingItem)).thenReturn(expectedResponse);
@@ -369,14 +368,5 @@ class BookingItemServiceImplTest {
 
         // ASSERT
         verify(bookingItemRepository).deleteById(999L);
-    }
-
-    @Test
-    void shouldRemoveItem() {
-        // ACT
-        service.removeItem(888L);
-
-        // ASSERT
-        verify(bookingItemRepository).deleteById(888L);
     }
 }

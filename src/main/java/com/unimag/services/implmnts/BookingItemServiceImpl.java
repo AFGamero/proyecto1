@@ -80,10 +80,4 @@ public class BookingItemServiceImpl implements BookingItemService {
         return bookingMapper.toItemResponse(bookingItem);
     }
 
-
-
-    @Override
-    public void removeItem(Long itemId) {
-    bookingItemRepository.deleteById(itemId);
-    }
 }

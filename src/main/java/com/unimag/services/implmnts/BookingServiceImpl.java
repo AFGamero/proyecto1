@@ -27,7 +27,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDtos.BookingResponse createBooking(BookingDtos.BookingCreateRequest request) {
         var Passenger = passengerRepository.findById(request.passenger_id())
-                .orElseThrow(() -> new RuntimeException("Passenger with id " + request.passenger_id() + " not found"));
+                .orElseThrow(() -> new NotFoundException("Passenger with id " + request.passenger_id() + " not found"));
         var booking = Booking.builder().createdAt(OffsetDateTime.now()).passenger(Passenger).build();
 
         return bookingMapper.toResponse(bookingRepository.save(booking));
@@ -42,21 +42,11 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
-    public Page<BookingDtos.BookingResponse> listBookingsByPassengerEmailAndOrderedMostRecently(String passenger_email, Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public BookingDtos.BookingResponse getBookingWithAllDetails(Long id) {
-        return null;
-    }
-
-    @Override
     public BookingDtos.BookingResponse updateBooking(Long id, Long passenger_id) {
       Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking with id " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Booking with id " + id + " not found"));
         var passenger = passengerRepository.findById(passenger_id)
-                .orElseThrow(() -> new RuntimeException("Passenger with id " + passenger_id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Passenger with id " + passenger_id + " not found"));
         booking.setPassenger(passenger);
         return bookingMapper.toResponse(bookingRepository.save(booking));
     }
