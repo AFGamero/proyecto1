@@ -1,6 +1,7 @@
     package com.unimag.api.dto;
 
     import jakarta.annotation.Nonnull;
+    import jakarta.validation.constraints.NotBlank;
 
     import java.io.Serializable;
     import java.math.BigDecimal;
@@ -14,7 +15,7 @@
                                       List<BookingItemResponse> items) implements Serializable{}
 
 
-        public record BookingItemCreateRequest(@Nonnull String cabin, @Nonnull BigDecimal price, @Nonnull Integer segmentOrder) implements Serializable {}
+        public record BookingItemCreateRequest(@NotBlank String cabin, @Nonnull BigDecimal price, @Nonnull Integer segmentOrder) implements Serializable {}
 
         public record BookingItemUpdateRequest(String cabin, BigDecimal price, Integer segmentOrder) implements Serializable {}
 
