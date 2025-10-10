@@ -108,7 +108,7 @@ class AirlineServiceImplTest {
     }
 
     @Test
-    void ShoudListAllAirlines() {
+    void ShouldListAllAirlines() {
         // ARRANGE
         var airline1 = Airline.builder().id(1L).code("AA").name("American Airlines").build();
         var airline2 = Airline.builder().id(2L).code("DL").name("Delta Airlines").build();

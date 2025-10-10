@@ -48,6 +48,7 @@ public class BookingItemServiceImpl implements BookingItemService {
     public void deleteBookingItem(Long id) {
         bookingItemRepository.deleteById(id);
     }
+
     @Override
     public List<BookingDtos.BookingItemResponse> listByBooking(Long bookingId) {
         var booking = bookingRepository.findById(bookingId)
@@ -80,10 +81,4 @@ public class BookingItemServiceImpl implements BookingItemService {
         return bookingMapper.toItemResponse(bookingItem);
     }
 
-
-
-    @Override
-    public void removeItem(Long itemId) {
-    bookingItemRepository.deleteById(itemId);
-    }
 }

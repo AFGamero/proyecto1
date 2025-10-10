@@ -14,6 +14,4 @@ public interface BookingItemService {
     List<BookingItemResponse> listByBooking(Long bookingId);
 
     BookingItemResponse updateItem(Long bookingId,Long flightId ,BookingItemUpdateRequest req);
-
-    void removeItem(Long itemId);
 }
