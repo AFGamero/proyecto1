@@ -2,6 +2,7 @@ package com.unimag.services.implmnts;
 import com.unimag.api.dto.AirportDtos;
 import com.unimag.dominio.entidades.Airport;
 import com.unimag.dominio.repositories.AirportRepository;
+import com.unimag.exception.NotFoundException;
 import com.unimag.services.AirportService;
 import com.unimag.services.mappers.AirportMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class AirportServiceImpl implements AirportService  {
     public AirportDtos.AirportResponse findById(Long id) {
 
         return repo.findById(id).map(airportMapper::toResponse)
-                .orElseThrow(() -> new RuntimeException("Airport with id " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Airport with id " + id + " not found"));
     }
 
     @Override
@@ -37,7 +38,7 @@ public class AirportServiceImpl implements AirportService  {
 
     @Override
     public AirportDtos.AirportResponse update(Long id, AirportDtos.AirportUpdateRequest request) {
-        Airport airport = repo.findById(id).orElseThrow(() -> new RuntimeException("Airport with id " + id + " not found"));
+        Airport airport = repo.findById(id).orElseThrow(() -> new NotFoundException("Airport with id " + id + " not found"));
         airportMapper.updateEntityFromRequest(request,airport);
         return airportMapper.toResponse(repo.save(airport));
     }
