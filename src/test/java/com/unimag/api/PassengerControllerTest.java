@@ -1,9 +1,11 @@
 package com.unimag.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.unimag.api.dto.PassengerDtos.*;
-import com.unimag.services.PassengerService;
+import com.unimag.api.dto.PassengerDtos.PassengerCreateRequest;
+import com.unimag.api.dto.PassengerDtos.PassengerProfileDto;
+import com.unimag.api.dto.PassengerDtos.PassengerResponse;
 import com.unimag.exception.NotFoundException;
+import com.unimag.services.PassengerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
