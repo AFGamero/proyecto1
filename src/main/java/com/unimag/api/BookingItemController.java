@@ -1,6 +1,8 @@
 package com.unimag.api;
 
-import com.unimag.api.dto.BookingDtos.*;
+import com.unimag.api.dto.BookingDtos.BookingItemCreateRequest;
+import com.unimag.api.dto.BookingDtos.BookingItemResponse;
+import com.unimag.api.dto.BookingDtos.BookingItemUpdateRequest;
 import com.unimag.services.BookingItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +25,9 @@ public class BookingItemController {
                                                        @PathVariable Long flightId,
                                                        @RequestBody @Valid BookingItemCreateRequest req,
                                                        UriComponentsBuilder ucBuilder) {
-    var body = bookingItemService.addItem(bookingId, flightId, req);
-    var location = ucBuilder.path("/api/v1/bookings/{bookingId}/items/{itemId}").buildAndExpand(bookingId, body.id()).toUri();
-    return ResponseEntity.created(location).body(body);
+        var body = bookingItemService.addItem(bookingId, flightId, req);
+        var location = ucBuilder.path("/api/v1/bookings/{bookingId}/items/{itemId}").buildAndExpand(bookingId, body.id()).toUri();
+        return ResponseEntity.created(location).body(body);
     }
 
     @GetMapping("/{itemId}")
