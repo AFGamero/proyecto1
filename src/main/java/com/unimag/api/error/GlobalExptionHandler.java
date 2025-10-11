@@ -9,7 +9,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
 
-@RestController
+@RestControllerAdvice
 public class GlobalExptionHandler {
 
     @ExceptionHandler(NotFoundException.class)

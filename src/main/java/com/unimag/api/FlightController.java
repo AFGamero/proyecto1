@@ -28,23 +28,17 @@ public class FlightController {
                                                              UriComponentsBuilder ucBuilder) {
         var body = service.create(airlineId, originAirportId, destinationAirportId, request);
         var location = ucBuilder.path("/api/airlines/{airlineId}/Flights/{id}")
-                .buildAndExpand(body.id())
+                .buildAndExpand(airlineId,body.id())
                 .toUri();
         return ResponseEntity.created(location).body(body);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<FlightDtos.FlightResponse> getByid (@PathVariable long id,
-                                                              @RequestParam Long originAirportId,
-                                                              @RequestParam Long destinationAirportId,
-                                                              @Valid @RequestBody FlightDtos.FlightCreateRequest request,
-                                                              UriComponentsBuilder ucBuilder ) {
-            var body = service.create(id, originAirportId, destinationAirportId, request);
-            var location = ucBuilder.path("/api/airlines/{airlineId}/Flights/{id}")
-                    .buildAndExpand(body.id())
-                    .toUri();
-            return ResponseEntity.created(location).body(body);
+    @GetMapping("/{id}")
+    public ResponseEntity<FlightDtos.FlightResponse> getById(@PathVariable Long id) {
+        var body = service.findById(id);
+        return ResponseEntity.ok(body);
     }
+
 
     @GetMapping
     public ResponseEntity<List<FlightDtos.FlightResponse>> getAll() {
