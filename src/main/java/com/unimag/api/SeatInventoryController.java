@@ -26,8 +26,8 @@ public class SeatInventoryController {
                                           UriComponentsBuilder uriBuilder) {
 
         var body = service.create(flightId, request );
-        var location = uriBuilder.path("/api/flights/{flightId}/seat-inventories")
-                .buildAndExpand(body.id())
+        var location = uriBuilder.path("/api/flights/{flightId}/seat-inventories/{id}")
+                .buildAndExpand(flightId,body.id())
                 .toUri();
 
         return ResponseEntity.created(location).body("Seat inventory created with ID: " + body.id());
@@ -44,7 +44,7 @@ public class SeatInventoryController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping
+    @GetMapping("/by-cabin")
     public ResponseEntity<SeatInventoryDtos.SeatInventoryResponse> getByFlightIdAndCabin(
             @PathVariable Long flightId,
             @RequestParam String cabin) {
