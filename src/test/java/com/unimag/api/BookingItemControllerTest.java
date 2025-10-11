@@ -1,7 +1,8 @@
 package com.unimag.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.unimag.api.dto.BookingDtos.*;
+import com.unimag.api.dto.BookingDtos.BookingItemCreateRequest;
+import com.unimag.api.dto.BookingDtos.BookingItemResponse;
 import com.unimag.exception.NotFoundException;
 import com.unimag.services.BookingItemService;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static java.util.List.of;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
